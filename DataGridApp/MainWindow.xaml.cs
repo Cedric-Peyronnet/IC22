@@ -15,8 +15,8 @@ namespace DataGridApp
         {
             InitializeComponent();
             MyGrid.DeleteAllowed = true;
-            // LoadDataObsColl();
-            LoadDataFromDBF();
+            LoadDataObsColl();
+            //LoadDataFromDBF();
             
         }
         private void LoadDataObsColl()
