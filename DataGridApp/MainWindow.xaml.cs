@@ -17,7 +17,8 @@ namespace DataGridApp
             MyGrid.DeleteAllowed = true;
             LoadDataObsColl();
             //LoadDataFromDBF();
-            
+            this.DataContext = new WpfControls.Menu.MainWindowViewModel();
+
         }
         private void LoadDataObsColl()
         {

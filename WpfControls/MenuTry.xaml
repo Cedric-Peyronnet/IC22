@@ -5,8 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfControls"
         mc:Ignorable="d"
-        Title="MenuTry" Height="300" Width="300">
+        Title="MenuTry" Height="222.28" Width="383.938">
+    <Window.Resources>
+        <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem}">
+            <Setter Property="Command" Value="{Binding OnSelected}" />
+        </Style>
+    </Window.Resources>
     <Grid>
-        
+        <DockPanel LastChildFill="True" >
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <Menu IsMainMenu="True" 
+
+                ItemsSource="{Binding ParentItems}" Width="525">
+                <Menu.ItemTemplate>
+                    <HierarchicalDataTemplate 
+
+                    ItemContainerStyle="{StaticResource MenuItemStyle}">
+                        <ContentPresenter Content="{Binding Text}" 
+
+                        RecognizesAccessKey="True" />
+                        <HierarchicalDataTemplate.ItemsSource>
+                            <Binding Path="SubItems" />
+                        </HierarchicalDataTemplate.ItemsSource>
+                    </HierarchicalDataTemplate>
+                </Menu.ItemTemplate>
+            </Menu>
+        </StackPanel>
+        <Grid />
+    </DockPanel>
     </Grid>
 </Window>

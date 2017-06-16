@@ -8,7 +8,8 @@
         mc:Ignorable="d"
         Title="Kleijn transport" Height="350" Width="682.843">
     <Grid>
-        <WpfControls:MyDataGrid HorizontalAlignment="Left" Height="190" Margin="10,86,0,0" VerticalAlignment="Top" Width="639" Name="MyGrid"/>
+        <WpfControls:MyDataGrid HorizontalAlignment="Left" Height="190" Margin="10,119,0,0" VerticalAlignment="Top" Width="639" Name="MyGrid"/>
+        <WpfControls:Menu HorizontalAlignment="Right" Height="47" Margin="0,72,26,0" VerticalAlignment="Top"  Width="639" Name="Menu"/>
     </Grid>
-   
+    
 </Window>

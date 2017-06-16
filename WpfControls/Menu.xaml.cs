@@ -12,15 +12,21 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace WpfControls
 {
     /// <summary>
-    /// Interaction logic for MenuTry.xaml
+    /// Interaction logic for Menu.xaml
     /// </summary>
-   /* public partial class MenuTry :  UserControl
+    public partial class Menu : UserControl
     {
+        public Menu()
+        {
+            InitializeComponent();
+        }
+
         public class MenuService
         {
             private List<MenuItem> allMenuItems;
@@ -269,5 +275,5 @@ namespace WpfControls
             public event PropertyChangedEventHandler PropertyChanged;
         }
 
-    }*/
+    }
 }
