@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Data.OleDb;
 using System.Data;
 using MySql.Data.MySqlClient;
-/*
+
 namespace WpfControls
 {
     /// <summary>
@@ -80,9 +80,9 @@ namespace WpfControls
       
         public void LoadDataFromSQL()
         {
-            string constring = "datasource=localhost;port=3306;username=root;password=root";
+            string constring = "datasource=192.168.6.196;port=3306;username=cedric;password=root";
             MySqlConnection conDataBase = new MySqlConnection(constring);
-            string sql = "select * from test.imagod ;";
+            string sql = "select * from sqlbrowsertest.iamgod ;";
             MySqlCommand cmdDataBase = new MySqlCommand(sql, conDataBase);
 
             try
@@ -111,9 +111,7 @@ namespace WpfControls
             {
                 MessageBox.Show(ex.Message);
             }
-            /*
-                DataSet dbdataset = new DataSet();
-                sda.Fill(dbdataset, "test.iamgod");
+           
               
         }
         // event for the  menu ,currently not working     
@@ -381,7 +379,7 @@ namespace WpfControls
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>      
-     /*   private object ColorLoad(DataGrid value)
+       private object ColorLoad(DataGrid value)
         {
           int input;
             int negativOrPositivOrZero;
@@ -398,7 +396,7 @@ namespace WpfControls
                 {
                    
                     //Add case to have an other column dynamic color
-                  /*  switch (i)
+                   switch (i)
                     {
                         case 1:
                             for (int j = 0; j < numberOfRecord; j++)
@@ -602,4 +600,4 @@ namespace WpfControls
             //retest
         }
     }
-}*/
+}
