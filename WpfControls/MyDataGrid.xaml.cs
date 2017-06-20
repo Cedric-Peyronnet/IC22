@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Globalization;
 using System.Data.OleDb;
+using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace WpfControls
 {
@@ -77,6 +78,44 @@ namespace WpfControls
             }            
         }
       
+        public void LoadDataFromSQL()
+        {
+            string constring = "datasource=localhost;port=3306;username=root;password=root";
+            MySqlConnection conDataBase = new MySqlConnection(constring);
+            string sql = "select * from test.imagod ;";
+            MySqlCommand cmdDataBase = new MySqlCommand(sql, conDataBase);
+
+            try
+            {
+                MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
+              
+                DataTable dbDataTable = new DataTable();
+
+                sda.Fill(dbDataTable);
+
+                //     dbdataset = sda.Fill(dbdataset);
+
+                for (int index = 0; index < dbDataTable.Columns.Count; index++)
+                {
+                    var binding = new Binding($"Properties[{index}].Value");
+                    Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
+                }
+                
+              
+                Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
+                
+          
+                // Source
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            /*
+                DataSet dbdataset = new DataSet();
+                sda.Fill(dbdataset, "test.iamgod");
+              */
+        }
         // event for the  menu ,currently not working     
         private void MenuItemDeleteRow_Click(object sender, RoutedEventArgs e)
         {
@@ -327,7 +366,7 @@ namespace WpfControls
         /// </summary>      
         public void StartColor()
         {
-            ColorLoad(Ic2DataGrid);
+            //ColorLoad(Ic2DataGrid);
         }
 
         /// <summary>
@@ -345,9 +384,9 @@ namespace WpfControls
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>      
-        private object ColorLoad(DataGrid value)
+     /*   private object ColorLoad(DataGrid value)
         {
-            int input;
+          int input;
             int negativOrPositivOrZero;
             try
             {
@@ -362,7 +401,7 @@ namespace WpfControls
                 {
                    
                     //Add case to have an other column dynamic color
-                    switch (i)
+                  /*  switch (i)
                     {
                         case 1:
                             for (int j = 0; j < numberOfRecord; j++)
@@ -411,13 +450,13 @@ namespace WpfControls
                 return DependencyProperty.UnsetValue;
             }
             return DependencyProperty.UnsetValue;
-        }
-    
-        /// <summary>
-        /// This event check he has to update the layout color background. It should be disablee if we don't want a background color 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        }*/
+
+            /// <summary>
+            /// This event check he has to update the layout color background. It should be disablee if we don't want a background color 
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
         private void AnUserControl_LayoutUpdated(object sender, EventArgs e)
         {
             if (updateColor)

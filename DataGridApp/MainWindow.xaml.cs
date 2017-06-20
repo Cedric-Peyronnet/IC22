@@ -15,10 +15,10 @@ namespace DataGridApp
         {
             InitializeComponent();
             MyGrid.DeleteAllowed = true;
-            LoadDataObsColl();
-            //LoadDataFromDBF();
-            this.DataContext = new WpfControls.Menu.MainWindowViewModel();
-
+               LoadDataObsColl();
+            // LoadDataFromDBF();
+         //   LoadDataFromSQL();
+       //     this.DataContext = new WpfControls.Menu.MainWindowViewModel();
         }
         private void LoadDataObsColl()
         {
@@ -57,5 +57,10 @@ namespace DataGridApp
         {
             MyGrid.LoadData(MyGrid.GetYourDataIntoDataGrid());
         }
+        private void LoadDataFromSQL()
+        {
+            MyGrid.LoadDataFromSQL();
+        }
+        
     }
 }
