@@ -51,6 +51,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AddRowWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="EditCheck.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -65,6 +69,9 @@
     </Page>
     <Compile Include="AddMenuButtonInformation.xaml.cs">
       <DependentUpon>AddMenuButtonInformation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddRowWindow.xaml.cs">
+      <DependentUpon>AddRowWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditCheck.xaml.cs">
       <DependentUpon>EditCheck.xaml</DependentUpon>

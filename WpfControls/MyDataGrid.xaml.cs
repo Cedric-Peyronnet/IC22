@@ -63,7 +63,7 @@ namespace WpfControls
                         var binding = new Binding($"Properties[{j}].Value");
                         CheckBox cb = new CheckBox();
                         cb.Name = nameOfBox;
-                        DataGridCheckBoxColumn dg = (new DataGridCheckBoxColumn { Header = cb.Name, Binding = binding });
+                        DataGridCheckBoxColumn dg = new DataGridCheckBoxColumn { Header = cb.Name, Binding = binding };
                         Ic2DataGrid.Columns.Insert(j, dg);
                     }
                 }                      
@@ -109,27 +109,12 @@ namespace WpfControls
                 Delete.Visibility = Visibility.Hidden;
             }
         }
-        private void MenuItemAdd_click(object sender, RoutedEventArgs e)
-        {
-            string header;
-            AddMenuButtonInformation add = new AddMenuButtonInformation();
-            add.ShowDialog();
-            if(add.DialogResult ==true)
-            {
-                header = add.AddColumnTitle.Text;
-                var binding = new Binding($"Properties[{ 1}].Value");
-                Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = header, Binding = binding });
-                add.Close();
-            }
-            else
-            {
-                add.Close();
-            }
-
-        }
         private void MenuItemDeleteColumn_Click(object sender, RoutedEventArgs e)
         {
-
+            if (DeleteAllowed)
+            {
+                
+            }
         }
 
         //Generate a menutop 
@@ -217,12 +202,13 @@ namespace WpfControls
             //Make update available 
             Ic2DataGrid.IsReadOnly = false;
         }
+
         //If someone change the focus of the  currentCell by clicking somewhere else,it will change the readonly on true.
         private void Ic2DataGrid_CurrentCellChanged(object sender, EventArgs e)
         {
             Ic2DataGrid.IsReadOnly = false;
             StartColor();
-            Ic2DataGrid.IsReadOnly = true;
+           // Ic2DataGrid.IsReadOnly = true;
         }
 
         /// <summary>
@@ -247,17 +233,20 @@ namespace WpfControls
                     var columnIndex = cell.Column.DisplayIndex;
                     writeInTheCell = true;
                     edit.Close();
-            
-                    // Make a case for column could to get a dynamic value
+
+                    DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
+                    Record recordsOfDataContext = (Record)dgc.DataContext;
+
+                    string subStringValue = dgc.ToString();
+
+                    //Delete the content System.window ... 
+                    subStringValue = subStringValue.Substring(37);
+
+                    // Make a cell for column could to get a dynamic value
                     switch (columnIndex)
                     {
                         //Replace the value into the content with the column selected.
                         case 1:
-                            DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
-                            Record records = (Record)dgc.DataContext;
-                            string subStringValue = dgc.ToString();
-                            //Delete the content System.window ... 
-                            subStringValue = subStringValue.Substring(37);
                             // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
                             int nResult;
                             if (int.TryParse(subStringValue, out nResult) == false)
@@ -269,13 +258,21 @@ namespace WpfControls
                             else
                             {
                                 //Maybe can be change. We get only the value of the cell with a substring
-                                records.Properties[1].Value = subStringValue;
+                                recordsOfDataContext.Properties[1].Value = subStringValue;
+                                
                                 //Call the methode to change color after an update   
                                 changeColor(Ic2DataGrid.CurrentCell, e);
                                 break;
                             }
-                    }                                  
-                }
+                        default:
+                            break;
+                    }
+                    Ic2DataGrid.IsReadOnly = false;
+
+                    recordsOfDataContext.Properties[columnIndex].Value = subStringValue;
+
+
+                }   
                 else
                 {
                     Ic2DataGrid.CurrentCell = cell;
@@ -300,7 +297,7 @@ namespace WpfControls
         private void UserControl_MouseClick(object sender, MouseButtonEventArgs e)
         {
             Ic2DataGrid.IsReadOnly = false;    
-            if (updateANewCell == true)
+            if (updateANewCell)
             {
                 Ic2DataGrid.IsReadOnly = true;
                 updateANewCell = false;
@@ -509,6 +506,61 @@ namespace WpfControls
                 DBFRecords.Add(rc);
             }
             return DBFRecords;
+        }
+
+        //Modify the text of the window which will be open infonction of what element you will add
+        public void addColumnButtonClick()
+        {
+            string header;
+            AddMenuButtonInformation add = new AddMenuButtonInformation();
+            add.AddTextBoxLabel.Content = "Enter column name :";
+            add.addOneElementWindow.Title = "Add a column";
+            add.AddColumnTitle.Text = "Enter column name";
+            add.ShowDialog();
+            if (add.DialogResult == true)
+            {
+                header = add.AddColumnTitle.Text;
+                addColumn(header);
+                add.Close();
+            }
+            else
+            {
+                add.Close();
+            }
+        }
+
+        //Add a column in the actual record and in the datagrid
+        public void addColumn(String columnHeader)
+        {
+            records = (ObservableCollection<Record>)Ic2DataGrid.ItemsSource;
+
+            int count = 0;
+            foreach (var bonsoir in records)
+            {
+                records[count].Properties.Add(new Property(columnHeader, ""));
+                count++;
+            }
+            int columnNumber = Ic2DataGrid.Columns.Count();
+
+            var binding = new Binding($"Properties[{columnNumber}].Value");
+
+            Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
+
+        }
+
+        //Call addcolumn method when click on button
+        private void addingColumn_Click(object sender, RoutedEventArgs e)
+        {
+            addColumnButtonClick();
+        }
+
+        //Call addrow method when click on button
+        private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AddRowWindow arw = new AddRowWindow();
+            arw.ShowDialog();
+            //test
+            //retest
         }
     }
 }

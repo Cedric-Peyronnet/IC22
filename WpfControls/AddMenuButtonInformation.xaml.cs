@@ -19,13 +19,18 @@ namespace WpfControls
     /// </summary>
     public partial class AddMenuButtonInformation : Window
     {
-      
+        //Boolean which says if the addcolumn text zone is already selected
+        public Boolean textZoneSelected = false;
         public AddMenuButtonInformation()
         {
             InitializeComponent();
         }
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
+            if(AddColumnTitle.Opacity != 100)
+            {
+                AddColumnTitle.Text = "";
+            }
 
             DialogResult = true;
         }
@@ -36,5 +41,15 @@ namespace WpfControls
             DialogResult = false;
         }
 
+        private void AddColumnTitle_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            
+            if (!textZoneSelected)
+            {
+                AddColumnTitle.Text = " ";
+                AddColumnTitle.Opacity = 100;
+                textZoneSelected = true;
+            }            
+        }
     }
 }
