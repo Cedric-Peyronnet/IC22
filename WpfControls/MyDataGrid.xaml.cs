@@ -77,43 +77,8 @@ namespace WpfControls
                 Delete.Visibility = Visibility.Collapsed;                
             }            
         }
-      
-        public void LoadDataFromSQL()
-        {
-            string constring = "datasource=192.168.6.196;port=3306;username=cedric;password=root";
-            MySqlConnection conDataBase = new MySqlConnection(constring);
-            string sql = "select * from sqlbrowsertest.iamgod ;";
-            MySqlCommand cmdDataBase = new MySqlCommand(sql, conDataBase);
+    
 
-            try
-            {
-                MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
-              
-                DataTable dbDataTable = new DataTable();
-
-                sda.Fill(dbDataTable);
-
-                //     dbdataset = sda.Fill(dbdataset);
-
-                for (int index = 0; index < dbDataTable.Columns.Count; index++)
-                {
-                    var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
-                    Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
-                }
-                
-              
-                Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
-                
-          
-                // Source
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-           
-              
-        }
         // event for the  menu ,currently not working     
         private void MenuItemDeleteRow_Click(object sender, RoutedEventArgs e)
         {
@@ -598,6 +563,59 @@ namespace WpfControls
             arw.ShowDialog();
             //test
             //retest
+        }
+
+        ////////////---------------SQL PART------------------///////////////////////////////////
+
+        /// <summary>
+        ///Loading a datagrid from a database 
+        /// </summary>
+        public void LoadDataFromSQL()
+        {
+            //add check box column start at 0 
+            List<int> ColumnCheckBox = new List<int> { 3 };
+
+            //Create the string for the connection
+            string constring = "datasource=192.168.6.196;port=3306;username=cedric;password=root";
+            //connection
+            MySqlConnection conDataBase = new MySqlConnection(constring);
+            //Sql query to Load
+            string sql = "select * from sqlbrowsertest.iamgod ;";
+            MySqlCommand cmdDataBase = new MySqlCommand(sql, conDataBase);
+
+            try
+            {
+                MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
+
+                //Data table to store the information
+                DataTable dbDataTable = new DataTable();
+                //Fill the inforamation into the datatable
+                sda.Fill(dbDataTable);
+                //Binding the information 
+                for (int index = 0; index < dbDataTable.Columns.Count; index++)
+                {
+                    //Binding information (CheckBox part) 
+                    if (ColumnCheckBox.Contains(index))
+                    {
+                        var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
+                        Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
+                    }
+                    //Binding information (
+                    else
+                    {
+                        var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
+                        Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
+                    }
+                    
+                }
+
+                //Insert the information into itemsource 
+                Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
