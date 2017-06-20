@@ -7,22 +7,27 @@
              mc:Ignorable="d" Height="301.622" Width="348.649">
  
     <UserControl.Resources>
-        <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem}">
+        <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem }">
             <Setter Property="Command" Value="{Binding OnSelected}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Background" Value="DarkMagenta"/>
+            <Setter Property="Header" Value="DarkMagenta"/>
         </Style>
+
+
     </UserControl.Resources>
     <Grid>
         <DockPanel LastChildFill="True" >
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                 <Menu IsMainMenu="True" 
-
                 ItemsSource="{Binding ParentItems}" Width="525">
+                    
+                   
                     <Menu.ItemTemplate>
                         <HierarchicalDataTemplate 
-
                     ItemContainerStyle="{StaticResource MenuItemStyle}">
                             <ContentPresenter Content="{Binding Text}" 
-
                         RecognizesAccessKey="True" />
                             <HierarchicalDataTemplate.ItemsSource>
                                 <Binding Path="SubItems" />
@@ -30,6 +35,7 @@
                         </HierarchicalDataTemplate>
                     </Menu.ItemTemplate>
                 </Menu>
+
             </StackPanel>
             <Grid />
         </DockPanel>
