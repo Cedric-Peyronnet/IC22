@@ -10,6 +10,7 @@
     <Grid>
         <WpfControls:MyDataGrid HorizontalAlignment="Left" Height="190" Margin="10,119,0,0" VerticalAlignment="Top" Width="639" Name="MyGrid"/>
         <WpfControls:Menu HorizontalAlignment="Right" Height="47" Margin="0,119,26,0" VerticalAlignment="Top"  Width="639" Name="Menu"/>
+        <Button x:Name="addColumnButton" Content="Add Column" HorizontalAlignment="Left" Margin="500,34,0,0" VerticalAlignment="Top" Width="75" Click="addColumnButton_Click"/>
     </Grid>
     
 </Window>

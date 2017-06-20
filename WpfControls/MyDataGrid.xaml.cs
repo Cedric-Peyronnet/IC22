@@ -10,7 +10,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Globalization;
 using System.Data.OleDb;
-using MySql.Data.MySqlClient;
 using System.Data;
 
 namespace WpfControls
@@ -78,7 +77,7 @@ namespace WpfControls
             }            
         }
       
-        public void LoadDataFromSQL()
+        /*public void LoadDataFromSQL()
         {
             string constring = "datasource=localhost;port=3306;username=root;password=root";
             MySqlConnection conDataBase = new MySqlConnection(constring);
@@ -114,8 +113,8 @@ namespace WpfControls
             /*
                 DataSet dbdataset = new DataSet();
                 sda.Fill(dbdataset, "test.iamgod");
-              */
-        }
+              
+        }*/
         // event for the  menu ,currently not working     
         private void MenuItemDeleteRow_Click(object sender, RoutedEventArgs e)
         {

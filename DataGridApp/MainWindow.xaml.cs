@@ -57,10 +57,15 @@ namespace DataGridApp
         {
             MyGrid.LoadData(MyGrid.GetYourDataIntoDataGrid());
         }
-        private void LoadDataFromSQL()
+
+        private void addColumnButton_Click(object sender, RoutedEventArgs e)
         {
-            MyGrid.LoadDataFromSQL();
+            MyGrid.addColumnButtonClick();
         }
-        
+        /* private void LoadDataFromSQL()
+{
+MyGrid.LoadDataFromSQL();
+}*/
+
     }
 }
