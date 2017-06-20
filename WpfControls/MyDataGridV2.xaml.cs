@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Data.OleDb;
 using System.Data;
 using MySql.Data.MySqlClient;
-/*
+
 namespace WpfControls
 {
     /// <summary>
@@ -111,7 +111,7 @@ namespace WpfControls
             {
                 MessageBox.Show(ex.Message);
             }
-            /*
+            
                 DataSet dbdataset = new DataSet();
                 sda.Fill(dbdataset, "test.iamgod");
               
@@ -600,6 +600,6 @@ namespace WpfControls
             arw.ShowDialog();
             //test
             //retest
-        }
+        }*/
     }
-}*/
+}

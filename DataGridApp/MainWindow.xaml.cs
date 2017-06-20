@@ -15,33 +15,33 @@ namespace DataGridApp
         {
             InitializeComponent();
             MyGrid.DeleteAllowed = true;
-               LoadDataObsColl();
+            //           LoadDataObsColl();
             // LoadDataFromDBF();
-         //   LoadDataFromSQL();
-       //     this.DataContext = new WpfControls.Menu.MainWindowViewModel();
+            LoadDataFromSQL();
+            //     this.DataContext = new WpfControls.Menu.MainWindowViewModel();
         }
         private void LoadDataObsColl()
         {
-           
-            CheckBox p =  new CheckBox();
+
+            CheckBox p = new CheckBox();
             var records = new ObservableCollection<Record>
             {
                 new Record(new Property("FirstName", "Paul"), new Property("LastName", "15"), new Property("bonsoir", "Test")),
                 new Record(new Property("FirstName", "Tony"), new Property("LastName", "-15"), new Property("bonsoir", "Test"))
-            };           
+            };
             int count = 0;
             foreach (var bonsoir in records)
-            {               
+            {
                 CheckBox cb = new CheckBox();
-                records[count].Properties.Insert(2,new Property("dsq", cb));
-               // records[count].Properties.Add(new Property("dsq", cb));
+                records[count].Properties.Insert(2, new Property("dsq", cb));
+                // records[count].Properties.Add(new Property("dsq", cb));
                 records[count].Properties.Add(new Property("fsdfsdf", cb));
                 count++;
             }
 
             MyGrid.LoadData(records);
 
-          
+
         }
         private void LoadDataListColl()
         {
@@ -50,8 +50,8 @@ namespace DataGridApp
             ca.View = gridView;
             gridView.Columns.Add(new GridViewColumn { Header = "Id" });
             gridView.Columns.Add(new GridViewColumn { Header = "Id2" });
-            
-//            MyGrid.LoadData(MyGrid.ListViewToOC1(ca));
+
+            //            MyGrid.LoadData(MyGrid.ListViewToOC1(ca));
         }
         private void LoadDataFromDBF()
         {
@@ -62,10 +62,10 @@ namespace DataGridApp
         {
             MyGrid.addColumnButtonClick();
         }
-        /* private void LoadDataFromSQL()
-{
-MyGrid.LoadDataFromSQL();
-}*/
+        private void LoadDataFromSQL()
+        {
+            MyGrid.LoadDataFromSQL();
+        }
 
     }
 }

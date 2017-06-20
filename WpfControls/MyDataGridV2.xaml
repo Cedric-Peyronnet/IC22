@@ -1,0 +1,53 @@
+﻿<UserControl x:Name="AnUserControl" x:Class="WpfControls.MyDataGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfControls"    
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MouseDoubleClick="UserControl_MouseDoubleClick" MouseDown="UserControl_MouseClick" PreviewKeyDown="UserControl_PreviewKeyDown" LayoutUpdated="AnUserControl_LayoutUpdated" >
+    <UserControl.Resources>
+        <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <local:ValueToBrushConverter  x:Key="ValueToBrushConverter"/>
+        <Style x:Key="GridStyle" TargetType="{x:Type DataGrid}" >
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="GridLinesVisibility" Value="None" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CanUserDeleteRows" Value="False" />
+            <Setter Property="CanUserResizeColumns" Value="True" />
+            <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="True" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource GridHeaderStyle}" />
+        </Style>
+    </UserControl.Resources>
+    <DataGrid ItemsSource="{Binding Path=Records}" Name="Ic2DataGrid"
+        Style="{StaticResource GridStyle}" Margin="0,-4,0,4" 
+              CurrentCellChanged="Ic2DataGrid_CurrentCellChanged" 
+              Loaded="Ic2DataGrid_Loaded"  >
+        <DataGrid.Resources>
+            <Style TargetType="DataGridColumnHeader">
+                <EventSetter Event="Click" Handler="columnHeader_Click" />
+            </Style>
+        </DataGrid.Resources>
+
+
+        <DataGrid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Add" Name="Add">
+                    <MenuItem Header="Add Column" Click="addingColumn_Click" Name="addingColumn"/>
+                    <MenuItem Header="Add Row" Click="addRowMenuItem_Click" Name="addingRow"/>
+                </MenuItem>
+                <MenuItem Header="Edit" Name="Edit"></MenuItem>
+                <MenuItem Header="Delete" Name="Delete">
+                    <MenuItem Header="Delete Column" Click="MenuItemDeleteColumn_Click" Name="Column"/>
+                    <MenuItem Header="Delete Row" Click="MenuItemDeleteColumn_Click" Name="Row"/>
+                </MenuItem>
+
+            </ContextMenu>
+        </DataGrid.ContextMenu>
+    </DataGrid>
+</UserControl>

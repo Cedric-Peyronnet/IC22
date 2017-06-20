@@ -68,6 +68,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="MyDataGridV2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="AddMenuButtonInformation.xaml.cs">
       <DependentUpon>AddMenuButtonInformation.xaml</DependentUpon>
     </Compile>
@@ -83,6 +87,9 @@
     </Compile>
     <Compile Include="MyDataGrid.xaml.cs">
       <DependentUpon>MyDataGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MyDataGridV2.xaml.cs">
+      <DependentUpon>MyDataGridV2.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
