@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -6,11 +7,17 @@ using WpfControls;
 
 namespace DataGridApp
 {
+
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        string sqlConnection = "datasource=192.168.6.196;port=3306;username=cedric;password=root";
+        string sqlQuerry = "select* from sqlbrowsertest.iamgod ";
+        
+        List<int> aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL;
         public MainWindow()
         {
             InitializeComponent();
@@ -64,8 +71,10 @@ namespace DataGridApp
         }
         private void LoadDataFromSQL()
         {
-            MyGrid.LoadDataFromSQL();
-        }
 
+            aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> { 3 };
+       //     aListIsRead = new List<int> { 2 };
+            MyGrid.LoadDataFromSQL(aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);
+        }
     }
 }
