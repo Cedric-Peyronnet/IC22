@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -8,7 +9,6 @@ using WpfControls;
 namespace DataGridApp
 {
 
-    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -18,6 +18,8 @@ namespace DataGridApp
         string sqlQuerry = "select* from sqlbrowsertest.iamgod ";
         
         List<int> aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL;
+
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -26,7 +28,7 @@ namespace DataGridApp
             // LoadDataFromDBF();
             LoadDataFromSQL();
             //     this.DataContext = new WpfControls.Menu.MainWindowViewModel();
-           
+            loadColor();
         }
         private void LoadDataObsColl()
         {
@@ -72,13 +74,19 @@ namespace DataGridApp
         }
         private void LoadDataFromSQL()
         {
-            
-           
-           
             aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> { 3 };
        //     aListIsRead = new List<int> { 2 };
-            MyGrid.LoadDataFromSQL(aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);
-            
+            MyGrid.LoadDataFromSQL(aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);            
         }
+        private void loadColor()
+        {
+            MyGrid.brushCur = Brushes.Black ;
+            MyGrid.brushValue1 = Brushes.Red ;
+            MyGrid.brushValue2 = Brushes.Green;
+            MyGrid.value1 = 25;
+            MyGrid.value2 = 25;
+            MyGrid.listOfColumnChangeIntegerAsCellDetail = new List<int> {2};
+        }
+
     }
 }

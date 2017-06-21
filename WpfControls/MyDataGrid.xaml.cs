@@ -25,6 +25,16 @@ namespace WpfControls
         public bool writeInTheCell { get; set; }
         public bool DeleteAllowed { get; set; }
 
+        public Brush tempBrush { get; set; }
+        public Brush brushCur { get; set; }
+        public Brush brushValue1 { get; set; }
+        public Brush brushValue2 { get; set; }
+        public List<int> listOfColumnChangeIntegerAsCellDetail { get; set; }
+        public int value1 { get; set; }
+        public int value2 { get; set; }
+
+
+
         ObservableCollection<Record> records;
 
         public static CultureInfo CurrentCulture { get; set; }
@@ -153,10 +163,9 @@ namespace WpfControls
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
-        {
-            Brush b = Brushes.Black;
-          
-            changeColorColumn(2, b);
+        {  
+            changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+            
         }
 
        
@@ -186,7 +195,7 @@ namespace WpfControls
             var columnHeader = sender as DataGridColumnHeader;
             if (columnHeader != null)
             {
-                updateColor = true;
+                updateColor = true;               
             }
         }
 
@@ -364,19 +373,20 @@ namespace WpfControls
        
         }
 
-        private void changeColorColumn (int columnIndex, Brush colorCur)
+        private void changeColorColumnCellDetailInteger (List<int> listOfColumnChangeInteger)
         {
-            Brush bot = Brushes.Coral;
-            Brush tob = Brushes.PowderBlue;
-            for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+          foreach(int index in listOfColumnChangeInteger)
             {
-                Brush color;
-                DataGridRow r = Ic2DataGrid.GetRow(i);
-                DataGridCell cell = Ic2DataGrid.GetCell(r, columnIndex);
-                color= changeColorConditionInteger(cell, colorCur, 50 , 30 ,bot, tob );        
-                cell.Background = color;
+                for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+                {
+                    Brush color;
+                    DataGridRow r = Ic2DataGrid.GetRow(i);
+                    DataGridCell cell = Ic2DataGrid.GetCell(r, index);
+                    color = changeColorConditionIntegerWithValue(cell, tempBrush);
+                    cell.Background = color;
+                }
             }
-
+         
         }
         /// <summary>
         /// Change a backgroundcolor with value in code
@@ -386,20 +396,20 @@ namespace WpfControls
         /// <returns></returns>
         private Brush changeColorConditionInteger(DataGridCell cell, Brush b)
         {
-            Brush aBrush = b;
+            tempBrush = b;
             string cellContent = cell.ToString();
             string[] getValue = cellContent.Split(':');
 
             int value = int.Parse(getValue[1]);
             if (value > 50)
             {
-                aBrush = Brushes.Green;
+                tempBrush = Brushes.Green;
                 
             }else if (value < 50 )
             {
-                aBrush = Brushes.Red;
+                tempBrush = Brushes.Red;
             }
-            return aBrush;
+            return tempBrush;
         }
         /// <summary>
         /// Brush b is the current backgroundcolor. Value1 will fix if you want a upper stric value backgroundcolor change and value2 will fix if you want a lower strict value backgroundcolor change. Brush 1 and 2 is the color for the value1 and value2
@@ -411,9 +421,9 @@ namespace WpfControls
         /// <param name="brushValue1"></param>
         /// <param name="brusValue2"></param>
         /// <returns></returns>
-        private Brush changeColorConditionInteger(DataGridCell cell, Brush b, int value1, int value2 , Brush brushValue1 , Brush brushValue2)
+        private Brush changeColorConditionIntegerWithValue(DataGridCell cell, Brush b )
         {
-            Brush aBrush = b;
+            tempBrush = null;
             //Get the information about the value with a spliter 
             //The content content the type + value so the spliter keep the value
             string cellContent = cell.ToString();
@@ -424,14 +434,29 @@ namespace WpfControls
             int value = int.Parse(getValue[1]);
             if (value > value1)
             {
-                aBrush = brushValue1;
+                tempBrush = brushValue1;
 
             }
             else if (value < value2)
             {
-                aBrush = brushValue2;
+                tempBrush = brushValue2;
             }
-            return aBrush;
+            return tempBrush;
+        }
+
+        /// <summary>
+        /// This change every background color of a column
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="indexColumn"></param>
+        private void changeColorAColumn(Brush b,int indexColumn )
+        {
+            for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+            {             
+                DataGridRow r = Ic2DataGrid.GetRow(i);
+                DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
+                cell.Background = b;
+            }
         }
     }
 }
