@@ -25,11 +25,13 @@ namespace WpfControls
         public bool writeInTheCell { get; set; }
         public bool DeleteAllowed { get; set; }
 
+        // Everything here have to be initialize in the main
         public Brush tempBrush { get; set; }
         public Brush brushCur { get; set; }
         public Brush brushValue1 { get; set; }
         public Brush brushValue2 { get; set; }
         public List<int> listOfColumnChangeIntegerAsCellDetail { get; set; }
+        public List<int> listOfColumnChangeAllCell { get; set; }
         public int value1 { get; set; }
         public int value2 { get; set; }
 
@@ -164,8 +166,10 @@ namespace WpfControls
         /// <param name="e"></param>
         private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
         {  
+            //Detail change Column Cell 
             changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
-            
+            //change all the column with a color
+            changeColorAColumn(brushCur, listOfColumnChangeAllCell);     
         }
 
        
@@ -177,12 +181,15 @@ namespace WpfControls
         /// <param name="e"></param>
         private void AnUserControl_LayoutUpdated(object sender, EventArgs e)
         {
-            /*    if (updateColor)
+              if (updateColor)
                  {
-                     StartColor();
-                 }
+                //Detail change Column Cell 
+                changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+                //change all the column with a color
+                changeColorAColumn(brushCur, listOfColumnChangeAllCell);
+            }
 
-                 updateColor = false;*/
+                 updateColor = false;
         }
 
         /// <summary>
@@ -372,21 +379,26 @@ namespace WpfControls
         {
        
         }
-
+        /// <summary>
+        /// This methode will make all the change for every cell you have in the column. It's taking a list as paramater you initialize in the main
+        /// </summary>
+        /// <param name="listOfColumnChangeInteger"></param>
         private void changeColorColumnCellDetailInteger (List<int> listOfColumnChangeInteger)
         {
           foreach(int index in listOfColumnChangeInteger)
             {
                 for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
                 {
+                    //Initialiaze a new brush
                     Brush color;
+                    // get info of a cell 
                     DataGridRow r = Ic2DataGrid.GetRow(i);
                     DataGridCell cell = Ic2DataGrid.GetCell(r, index);
+                    // methode to return a brush value
                     color = changeColorConditionIntegerWithValue(cell, tempBrush);
                     cell.Background = color;
                 }
-            }
-         
+            }        
         }
         /// <summary>
         /// Change a backgroundcolor with value in code
@@ -394,12 +406,13 @@ namespace WpfControls
         /// <param name="cell"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        private Brush changeColorConditionInteger(DataGridCell cell, Brush b)
+        private Brush changeColorConditionInteger(DataGridCell cell, Brush tempBrush)
         {
-            tempBrush = b;
+          
+            //getting value of the cell
             string cellContent = cell.ToString();
             string[] getValue = cellContent.Split(':');
-
+            
             int value = int.Parse(getValue[1]);
             if (value > 50)
             {
@@ -449,14 +462,20 @@ namespace WpfControls
         /// </summary>
         /// <param name="b"></param>
         /// <param name="indexColumn"></param>
-        private void changeColorAColumn(Brush b,int indexColumn )
+        private void changeColorAColumn(Brush b,List<int> listOfColumnChangeAllCell)
         {
+            //if you have an integer in the list it will color all the color with the brushCur
+            foreach(int indexColumn in listOfColumnChangeAllCell) { 
             for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
             {             
+                // get the cell
                 DataGridRow r = Ic2DataGrid.GetRow(i);
                 DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
                 cell.Background = b;
             }
+            }
         }
     }
+
+    //Next to do make a list with a string contain it will check if we have the contain for a specific name or surname with the column 
 }

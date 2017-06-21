@@ -82,10 +82,13 @@ namespace DataGridApp
         {
             MyGrid.brushCur = Brushes.Black ;
             MyGrid.brushValue1 = Brushes.Red ;
-            MyGrid.brushValue2 = Brushes.Green;
+            MyGrid.brushValue2 = Brushes.Blue;
             MyGrid.value1 = 25;
             MyGrid.value2 = 25;
+            // Column 3 will be display cell by cell a background color from previous value 
             MyGrid.listOfColumnChangeIntegerAsCellDetail = new List<int> {2};
+            //Column 2 will display all the columns with a background color
+            MyGrid.listOfColumnChangeAllCell = new List<int> { 1,3 };
         }
 
     }
