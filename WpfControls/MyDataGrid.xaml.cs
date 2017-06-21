@@ -108,84 +108,7 @@ namespace WpfControls
             // Ic2DataGrid.IsReadOnly = true;
         }
 
-        /// <summary>
-        /// event if someone is in editing mod and he presses enter then ok will make change in DataGrid
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UserControl_PreviewKeyDown1(object sender, KeyEventArgs e)
-        {
-            updateANewCell = true;
-            StartColor();
-            var cell = Ic2DataGrid.CurrentCell;
-            if (e.Key == Key.Enter)
-            {
-                EditCheck edit = new EditCheck();
-                edit.CheckPopupLabel.Content = "Do you want to update the current cell ?";
-                edit.ShowDialog();
-                if (edit.DialogResult.Value)
-                {
-                    //Get information of cell to manage into sql
-                    var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
-                    var columnIndex = cell.Column.DisplayIndex;
-                    writeInTheCell = true;
-                    edit.Close();
-
-                    DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
-                    Record recordsOfDataContext = (Record)dgc.DataContext;
-
-                    string subStringValue = dgc.ToString();
-
-                    //Delete the content System.window ... 
-                    subStringValue = subStringValue.Substring(37);
-
-                    // Make a cell for column could to get a dynamic value
-                    switch (columnIndex)
-                    {
-                        //Replace the value into the content with the column selected.
-                        case 1:
-                            // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
-                            int nResult;
-                            if (int.TryParse(subStringValue, out nResult) == false)
-                            {
-                                MessageBox.Show("Not a correct entry !");
-                                Ic2DataGrid.IsReadOnly = true;
-                                break;
-                            }
-                            else
-                            {
-                                //Maybe can be change. We get only the value of the cell with a substring
-                                recordsOfDataContext.Properties[1].Value = subStringValue;
-
-                                //Call the methode to change color after an update   
-                                changeColor(Ic2DataGrid.CurrentCell, e);
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                    Ic2DataGrid.IsReadOnly = false;
-
-                    recordsOfDataContext.Properties[columnIndex].Value = subStringValue;
-
-
-                }
-                else
-                {
-                    Ic2DataGrid.CurrentCell = cell;
-                    Ic2DataGrid.IsReadOnly = true;
-                    writeInTheCell = true;
-                    edit.Close();
-                }
-            }
-            else
-            {
-                updateANewCell = true;
-            }
-
-        }
         //Prevent from someone click outside from the datagrid
-
         /// <summary>
         /// If someone click outside the cell which he update, that will cancel the readonly he made 
         /// </summary>
@@ -231,7 +154,9 @@ namespace WpfControls
         /// <param name="e"></param>
         private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
         {
-            StartColor();
+            Brush b = Brushes.Black;
+          
+            changeColorColumn(2, b);
         }
 
        
@@ -337,6 +262,7 @@ namespace WpfControls
                 MessageBox.Show(ex.Message);
             }
         }
+
         public void addColumnButtonClick()
         {
             string header;
@@ -364,7 +290,6 @@ namespace WpfControls
            
             Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
         }
-
 
         /// <summary>
         /// event if someone is in editing mod and he presses enter then ok will make change in DataGrid
@@ -432,6 +357,81 @@ namespace WpfControls
             {
                 updateANewCell = true;
             }
+        }
+
+        private void EnableEdit(DataGridCell dgc, bool isReadOnly )
+        {
+       
+        }
+
+        private void changeColorColumn (int columnIndex, Brush colorCur)
+        {
+            Brush bot = Brushes.Coral;
+            Brush tob = Brushes.PowderBlue;
+            for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+            {
+                Brush color;
+                DataGridRow r = Ic2DataGrid.GetRow(i);
+                DataGridCell cell = Ic2DataGrid.GetCell(r, columnIndex);
+                color= changeColorConditionInteger(cell, colorCur, 50 , 30 ,bot, tob );        
+                cell.Background = color;
+            }
+
+        }
+        /// <summary>
+        /// Change a backgroundcolor with value in code
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private Brush changeColorConditionInteger(DataGridCell cell, Brush b)
+        {
+            Brush aBrush = b;
+            string cellContent = cell.ToString();
+            string[] getValue = cellContent.Split(':');
+
+            int value = int.Parse(getValue[1]);
+            if (value > 50)
+            {
+                aBrush = Brushes.Green;
+                
+            }else if (value < 50 )
+            {
+                aBrush = Brushes.Red;
+            }
+            return aBrush;
+        }
+        /// <summary>
+        /// Brush b is the current backgroundcolor. Value1 will fix if you want a upper stric value backgroundcolor change and value2 will fix if you want a lower strict value backgroundcolor change. Brush 1 and 2 is the color for the value1 and value2
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="b"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <param name="brushValue1"></param>
+        /// <param name="brusValue2"></param>
+        /// <returns></returns>
+        private Brush changeColorConditionInteger(DataGridCell cell, Brush b, int value1, int value2 , Brush brushValue1 , Brush brushValue2)
+        {
+            Brush aBrush = b;
+            //Get the information about the value with a spliter 
+            //The content content the type + value so the spliter keep the value
+            string cellContent = cell.ToString();
+            string[] getValue = cellContent.Split(':');
+
+            //Spliter value are in an tab string so we took the 2 value. The 2 value is = at 1 on a tab 
+            //1 is egal at the value of the cell
+            int value = int.Parse(getValue[1]);
+            if (value > value1)
+            {
+                aBrush = brushValue1;
+
+            }
+            else if (value < value2)
+            {
+                aBrush = brushValue2;
+            }
+            return aBrush;
         }
     }
 }

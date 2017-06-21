@@ -256,5 +256,82 @@ namespace WpfControls
                 Delete.Visibility = Visibility.Hidden;
             }
         }
+
+        /// <summary>
+        /// event if someone is in editing mod and he presses enter then ok will make change in DataGrid
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            updateANewCell = true;
+            StartColor();
+            var cell = Ic2DataGrid.CurrentCell;
+            if (e.Key == Key.Enter)
+            {
+                EditCheck edit = new EditCheck();
+                edit.CheckPopupLabel.Content = "Do you want to update the current cell ?";
+                edit.ShowDialog();
+                if (edit.DialogResult.Value)
+                {
+                    //Get information of cell to manage into sql
+                    var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
+                    var columnIndex = cell.Column.DisplayIndex;
+                    writeInTheCell = true;
+                    edit.Close();
+
+                    DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
+                    Record recordsOfDataContext = (Record)dgc.DataContext;
+
+                    string subStringValue = dgc.ToString();
+
+                    //Delete the content System.window ... 
+                    subStringValue = subStringValue.Substring(37);
+
+                    // Make a cell for column could to get a dynamic value
+                    switch (columnIndex)
+                    {
+                        //Replace the value into the content with the column selected.
+                        case 1:
+                            // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
+                            int nResult;
+                            if (int.TryParse(subStringValue, out nResult) == false)
+                            {
+                                MessageBox.Show("Not a correct entry !");
+                                Ic2DataGrid.IsReadOnly = true;
+                                break;
+                            }
+                            else
+                            {
+                                //Maybe can be change. We get only the value of the cell with a substring
+                                recordsOfDataContext.Properties[1].Value = subStringValue;
+
+                                //Call the methode to change color after an update   
+                                changeColor(Ic2DataGrid.CurrentCell, e);
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                    Ic2DataGrid.IsReadOnly = false;
+
+                    recordsOfDataContext.Properties[columnIndex].Value = subStringValue;
+
+
+                }
+                else
+                {
+                    Ic2DataGrid.CurrentCell = cell;
+                    Ic2DataGrid.IsReadOnly = true;
+                    writeInTheCell = true;
+                    edit.Close();
+                }
+            }
+            else
+            {
+                updateANewCell = true;
+            }
+
+        }
     }
 }

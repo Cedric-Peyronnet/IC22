@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Media;
 using WpfControls;
 
 namespace DataGridApp
@@ -26,6 +26,7 @@ namespace DataGridApp
             // LoadDataFromDBF();
             LoadDataFromSQL();
             //     this.DataContext = new WpfControls.Menu.MainWindowViewModel();
+           
         }
         private void LoadDataObsColl()
         {
@@ -62,7 +63,7 @@ namespace DataGridApp
         }
         private void LoadDataFromDBF()
         {
-            MyGrid.LoadData(MyGrid.GetYourDataIntoDataGrid());
+         //   MyGrid.LoadData(MyGrid.GetYourDataIntoDataGrid());
         }
 
         private void addColumnButton_Click(object sender, RoutedEventArgs e)
@@ -71,10 +72,13 @@ namespace DataGridApp
         }
         private void LoadDataFromSQL()
         {
-
+            
+           
+           
             aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> { 3 };
        //     aListIsRead = new List<int> { 2 };
             MyGrid.LoadDataFromSQL(aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);
+            
         }
     }
 }
