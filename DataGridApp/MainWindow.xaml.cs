@@ -89,6 +89,11 @@ namespace DataGridApp
             MyGrid.listOfColumnChangeIntegerAsCellDetail = new List<int> {2};
             //Column 2 will display all the columns with a background color
             MyGrid.listOfColumnChangeAllCell = new List<int> { 1,3 };
+
+            MyGrid.listOfString = new List<string> {"cedric","dick" };
+
+            MyGrid.listOfColumnForString = new List<int> { 0 };
+
         }
 
     }

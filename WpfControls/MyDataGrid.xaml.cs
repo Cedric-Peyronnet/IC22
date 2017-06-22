@@ -32,6 +32,8 @@ namespace WpfControls
         public Brush brushValue2 { get; set; }
         public List<int> listOfColumnChangeIntegerAsCellDetail { get; set; }
         public List<int> listOfColumnChangeAllCell { get; set; }
+        public List<string> listOfString { get; set; }
+        public List<int> listOfColumnForString { get; set; }
         public int value1 { get; set; }
         public int value2 { get; set; }
 
@@ -169,7 +171,9 @@ namespace WpfControls
             //Detail change Column Cell 
             changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
             //change all the column with a color
-            changeColorAColumn(brushCur, listOfColumnChangeAllCell);     
+            changeColorAColumn(brushCur, listOfColumnChangeAllCell);
+            //change color for a string
+            changeColorAColumnString(brushCur, listOfColumnForString, listOfString);   
         }
 
        
@@ -187,6 +191,8 @@ namespace WpfControls
                 changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
                 //change all the column with a color
                 changeColorAColumn(brushCur, listOfColumnChangeAllCell);
+                // change the color for a string
+                changeColorAColumnString(brushCur, listOfColumnForString, listOfString);
             }
 
                  updateColor = false;
@@ -475,7 +481,29 @@ namespace WpfControls
             }
             }
         }
+
+        private void changeColorAColumnString(Brush b, List<int> listOfColumm, List<string> listOfString)
+        {
+            b = brushCur;
+            //if you have an integer in the list it will color all the color with the brushCur
+            foreach (int indexColumn in listOfColumnChangeAllCell)
+            {
+                for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+                {
+                    // get the cell
+                    DataGridRow r = Ic2DataGrid.GetRow(i);
+                    DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
+                    foreach(string currentString in listOfString)
+                    {
+                        cell.Background = b;
+                        break;
+                    }                   
+                }
+            }
+        }
     }
+
+
 
     //Next to do make a list with a string contain it will check if we have the contain for a specific name or surname with the column 
 }
