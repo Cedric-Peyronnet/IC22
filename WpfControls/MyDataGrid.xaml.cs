@@ -39,6 +39,7 @@ namespace WpfControls
 
 
 
+
         ObservableCollection<Record> records;
 
         public static CultureInfo CurrentCulture { get; set; }
@@ -248,6 +249,7 @@ namespace WpfControls
         /// </summary>
         public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
         {
+            
             //connection
             MySqlConnection conDataBase = new MySqlConnection(sqlConnection);
             //Sql query to Load
@@ -257,6 +259,8 @@ namespace WpfControls
                 MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
                 //Data table to store the information
                 DataTable dbDataTable = new DataTable();
+
+         
                 //Fill the inforamation into the datatable
                 sda.Fill(dbDataTable);
                 //Binding the information 
@@ -274,7 +278,6 @@ namespace WpfControls
                         var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
                         Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
                     }
-
                 }
                 //Insert the information into itemsource 
                 Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
@@ -504,6 +507,11 @@ namespace WpfControls
                         }                                      
                 }
             }
+        }
+
+        public void changeHeaderWithImage(int indexColumn, System.Drawing.Bitmap image)
+        {
+            Ic2DataGrid.Columns[indexColumn].Header = image;
         }
     }
 }

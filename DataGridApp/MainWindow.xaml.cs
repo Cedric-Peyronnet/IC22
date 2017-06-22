@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
+using System.Resources;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,7 +18,7 @@ namespace DataGridApp
         string sqlConnection = "datasource=192.168.6.196;port=3306;username=cedric;password=root";
         string sqlQuerry = "select* from sqlbrowsertest.iamgod ";
         
-        List<int> aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL;
+        List<int> aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL;
 
        
         public MainWindow()
@@ -74,15 +75,17 @@ namespace DataGridApp
         }
         private void LoadDataFromSQL()
         {
-            aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> { 3 };
+            aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> { 3 };
        //     aListIsRead = new List<int> { 2 };
-            MyGrid.LoadDataFromSQL(aListWitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);            
+            MyGrid.LoadDataFromSQL(aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);            
         }
         private void loadColor()
         {
-            MyGrid.brushCur = Brushes.Yellow ;
-            MyGrid.brushValue1 = Brushes.Red ;
-            MyGrid.brushValue2 = Brushes.Blue;
+            
+            var bmp = new System.Drawing.Bitmap(Properties.Resources.def);
+            MyGrid.brushCur = System.Windows.Media.Brushes.Yellow ;
+            MyGrid.brushValue1 = System.Windows.Media.Brushes.Red ;
+            MyGrid.brushValue2 = System.Windows.Media.Brushes.Blue;
             MyGrid.value1 = 25;
             MyGrid.value2 = 25;
             // Column 3 will be display cell by cell a background color from previous value 
@@ -94,6 +97,7 @@ namespace DataGridApp
 
             MyGrid.listOfColumnForString = new List<int> { 0 };
 
+            MyGrid.changeHeaderWithImage(2, bmp);
         }
 
     }
