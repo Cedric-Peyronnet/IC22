@@ -25,6 +25,18 @@ namespace WpfControls
         public bool writeInTheCell { get; set; }
         public bool DeleteAllowed { get; set; }
 
+        // Everything here have to be initialize in the main
+        public Brush tempBrush { get; set; }
+        public Brush brushCur { get; set; }
+        public Brush brushValue1 { get; set; }
+        public Brush brushValue2 { get; set; }
+        public List<int> listOfColumnChangeIntegerAsCellDetail { get; set; }
+        public List<int> listOfColumnChangeAllCell { get; set; }
+        public int value1 { get; set; }
+        public int value2 { get; set; }
+
+
+
         ObservableCollection<Record> records;
 
         public static CultureInfo CurrentCulture { get; set; }
@@ -40,24 +52,24 @@ namespace WpfControls
         /// <param name="records"></param>
         public void LoadData(ObservableCollection<Record> records)
         {
-          
+
             //first extract the columns from the collection and bind them to the grid
             var columns = records.First().Properties.Select((x, i) => new { Name = x.Name, Index = i }).ToArray();
             foreach (var column in columns)
             {
-                var binding = new Binding($"Properties[{column.Index}].Value");                 
+                var binding = new Binding($"Properties[{column.Index}].Value");
                 Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = column.Name, Binding = binding });
-             
+
             }
 
             //second the records themselves
 
             //Replace the "Text checkBox into a real checkBox" Redefine a binding
-            for(int i = 0; i < records.Count;i++)
+            for (int i = 0; i < records.Count; i++)
             {
-                for(int j = 0; j < records[i].Properties.Count(); j++)
-                {                  
-                    if (records[i].Properties[j].Value is CheckBox  )
+                for (int j = 0; j < records[i].Properties.Count(); j++)
+                {
+                    if (records[i].Properties[j].Value is CheckBox)
                     {
                         string nameOfBox = records[i].Properties[j].Name;
                         Ic2DataGrid.Columns.RemoveAt(j);
@@ -67,168 +79,26 @@ namespace WpfControls
                         DataGridCheckBoxColumn dg = new DataGridCheckBoxColumn { Header = cb.Name, Binding = binding };
                         Ic2DataGrid.Columns.Insert(j, dg);
                     }
-                }                      
+                }
             }
-            GenerateMenu();
+        
             Ic2DataGrid.ItemsSource = records;
-            
-            if (!DeleteAllowed) 
+
+            if (!DeleteAllowed)
             {
-                Delete.Visibility = Visibility.Collapsed;                
-            }            
-        }
-      
-        public void LoadDataFromSQL()
-        {
-            string constring = "datasource=localhost;port=3306;username=root;password=root";
-            MySqlConnection conDataBase = new MySqlConnection(constring);
-            string sql = "select * from test.imagod ;";
-            MySqlCommand cmdDataBase = new MySqlCommand(sql, conDataBase);
-
-            try
-            {
-                MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
-              
-                DataTable dbDataTable = new DataTable();
-
-                sda.Fill(dbDataTable);
-
-                //     dbdataset = sda.Fill(dbdataset);
-
-                for (int index = 0; index < dbDataTable.Columns.Count; index++)
-                {
-                    var binding = new Binding($"Properties[{index}].Value");
-                    Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
-                }
-                
-              
-                Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
-                
-          
-                // Source
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            /*
-                DataSet dbdataset = new DataSet();
-                sda.Fill(dbdataset, "test.iamgod");*/
-              
-        }
-        // event for the  menu ,currently not working     
-        private void MenuItemDeleteRow_Click(object sender, RoutedEventArgs e)
-        {
-            if (DeleteAllowed)
-            {
-                records = (ObservableCollection<Record>)Ic2DataGrid.ItemsSource;
-
-                //Get the clicked MenuItem
-                var menuItem = (MenuItem)sender;
-    
-                //Get the ContextMenu to which the menuItem belongs
-                var contextMenu = (ContextMenu)menuItem.Parent;
-
-                //Find the placementTarget
-                var item = (DataGrid)contextMenu.PlacementTarget;
-
-                //Get the underlying item, that you cast to your object that is bound
-                //to the DataGrid (and has subject and state as property)
-                // -1 Because we start at index 0
-                if (item.SelectedIndex != -1)
-                {
-                    var toDeleteFromBindedList = (Record)item.SelectedCells[0].Item;
-
-                    //Remove the toDeleteFromBindedList object from your ObservableCollection
-                    records.Remove(toDeleteFromBindedList);
-                }
-            }
-            else
-            {
-                Delete.Visibility = Visibility.Hidden;
+                Delete.Visibility = Visibility.Collapsed;
             }
         }
+
+        // ??
         private void MenuItemDeleteColumn_Click(object sender, RoutedEventArgs e)
         {
             if (DeleteAllowed)
             {
-                
+
             }
         }
 
-        //Generate a menutop 
-
-        private void GenerateMenu() {
-        
-
-        }
-
-
-        //Methode to get an ObservableCollection from a list. The method isn't finished 100%
-
-        public ObservableCollection<Record> ListViewToOC1(ListView list)
-        {
-            ObservableCollection<Record> records = new ObservableCollection<Record>();
-     
-            GridView gridView = new GridView();
-
-            gridView = (GridView)list.View;
-            // one list which contains headers titles and second contains items
-            List<string> headerList = new List<string>();
-            List<string> itemList = new List<string>();
-            // A record 
-            Record r;
-            // Array of property 
-            Property[] p = new Property[] {null};
-            int columnNumberOfCurrentListView = ((GridView)list.View).Columns.Count;
-            int listViewLenght = list.Items.Count;
-
-            //  Add Header name during the first loop
-            for (int i = 0; i <= listViewLenght; i++)
-            {
-                //Header collection + first line 
-                if (i == 0)
-                {  
-                    for (int j = 0; j < columnNumberOfCurrentListView; j++)
-                    {
-                        
-                        string header = ((GridView)list.View).Columns[j].Header.ToString();
-
-                        headerList.Add(header);
-                    }
-                }
-                //Line 2 to X
-                //The collection has (Column * row ) items
-                else
-                {
-                    for (int j = 0; j < columnNumberOfCurrentListView * listViewLenght ; j++)
-                    {
-                        string item = ((GridView)list.View).Columns[j].Header.ToString();
-                    }   
-                }
-            }
-            p = new Property[headerList.Count];
-            r = new Record();
-            //Adding column + item
-            for (int i = 0; i < headerList.Count; i++)
-            {
-                for (int j = 0; j <= 0; j++)
-                {
-                    //Add a new property with the column Header and the value 
-                    if (j == 0)
-                    {
-                        p[i] = (new Property(headerList[i], "0"));
-                    }else
-                    {
-
-                    }                   
-                }
-            }
-            r = new Record(p);
-            records.Add(r);
-            return records;
-
-        }
 
         // events for editing
         /// <summary>
@@ -247,87 +117,10 @@ namespace WpfControls
         {
             Ic2DataGrid.IsReadOnly = false;
             StartColor();
-           // Ic2DataGrid.IsReadOnly = true;
+            // Ic2DataGrid.IsReadOnly = true;
         }
 
-        /// <summary>
-        /// event if someone is in editing mod and he presses enter then ok will make change in DataGrid
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            updateANewCell = true;
-            StartColor();
-            var cell = Ic2DataGrid.CurrentCell;
-            if (e.Key == Key.Enter)
-            {
-                EditCheck edit = new EditCheck();
-                edit.CheckPopupLabel.Content = "Do you want to update the current cell ?";
-                edit.ShowDialog();
-                if (edit.DialogResult.Value)
-                {
-                    //Get information of cell to manage into sql
-                    var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
-                    var columnIndex = cell.Column.DisplayIndex;
-                    writeInTheCell = true;
-                    edit.Close();
-
-                    DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
-                    Record recordsOfDataContext = (Record)dgc.DataContext;
-
-                    string subStringValue = dgc.ToString();
-
-                    //Delete the content System.window ... 
-                    subStringValue = subStringValue.Substring(37);
-
-                    // Make a cell for column could to get a dynamic value
-                    switch (columnIndex)
-                    {
-                        //Replace the value into the content with the column selected.
-                        case 1:
-                            // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
-                            int nResult;
-                            if (int.TryParse(subStringValue, out nResult) == false)
-                            {
-                                MessageBox.Show("Not a correct entry !");
-                                Ic2DataGrid.IsReadOnly = true;
-                                break;
-                            }
-                            else
-                            {
-                                //Maybe can be change. We get only the value of the cell with a substring
-                                recordsOfDataContext.Properties[1].Value = subStringValue;
-                                
-                                //Call the methode to change color after an update   
-                                changeColor(Ic2DataGrid.CurrentCell, e);
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                    Ic2DataGrid.IsReadOnly = false;
-
-                    recordsOfDataContext.Properties[columnIndex].Value = subStringValue;
-
-
-                }   
-                else
-                {
-                    Ic2DataGrid.CurrentCell = cell;
-                    Ic2DataGrid.IsReadOnly = true;
-                    writeInTheCell = true;
-                    edit.Close();
-                }
-            }
-            else
-            {
-                updateANewCell = true;
-            }
-            
-        }
         //Prevent from someone click outside from the datagrid
-        
         /// <summary>
         /// If someone click outside the cell which he update, that will cancel the readonly he made 
         /// </summary>
@@ -335,16 +128,16 @@ namespace WpfControls
         /// <param name="e"></param>
         private void UserControl_MouseClick(object sender, MouseButtonEventArgs e)
         {
-            Ic2DataGrid.IsReadOnly = false;    
+            Ic2DataGrid.IsReadOnly = false;
             if (updateANewCell)
             {
                 Ic2DataGrid.IsReadOnly = true;
                 updateANewCell = false;
-            }         
+            }
         }
 
         // All these methodes/events are for the background color 
-        
+
         /// <summary>
         /// change the color when someone update a cell
         /// </summary>
@@ -372,98 +165,33 @@ namespace WpfControls
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
-        {
-            StartColor();
+        {  
+            //Detail change Column Cell 
+            changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+            //change all the column with a color
+            changeColorAColumn(brushCur, listOfColumnChangeAllCell);     
         }
+
+       
 
         /// <summary>
-        /// That load and update the background color
+        /// This event check he has to update the layout color background. It should be disablee if we don't want a background color 
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>      
-     /*   private object ColorLoad(DataGrid value)
-        {
-          int input;
-            int negativOrPositivOrZero;
-            try
-            {
-                DataGrid dg = value;
-
-                //Number of record
-                int numberOfRecord = dg.Items.Count;
-
-                //For every column you get is going to check value of integer of the row 
-                //You have to insert the column where the color should be changed / applyed
-                for (int i = 0; i < dg.Columns.Count; i++)
-                {
-                   
-                    //Add case to have an other column dynamic color
-                  /*  switch (i)
-                    {
-                        case 1:
-                            for (int j = 0; j < numberOfRecord; j++)
-                            {
-                                
-                                Record rc = (Record)dg.Items[j];
-
-                                DataGridRow dgr = moduleHelper.GetRow(dg, j);
-
-                                DataGridCell dgc = moduleHelper.GetCell(dg, dgr, i);
-                                string a = rc.Properties[i].Value.ToString();
-
-                                input = int.Parse(a);
-                                if (input > 0)
-                                {
-                                    negativOrPositivOrZero = 1;
-                                }
-                                else if (input == 0)
-                                {
-                                    negativOrPositivOrZero = 0;
-                                }
-                                else
-                                {
-                                    negativOrPositivOrZero = -1;
-                                }
-                                switch (negativOrPositivOrZero)
-                                {
-                                    case 1:
-                                        dgc.Background = Brushes.Green;
-                                        break;
-                                    case 0:
-                                        dgc.Background = Brushes.Orange;
-                                        break;
-                                    case -1:
-                                        dgc.Background = Brushes.Red;
-                                        break;
-                                }
-                            }
-                            break;
-                    }
-                }
-            }
-            catch (InvalidCastException e)
-            {
-                Console.Write(e.ToString());
-                return DependencyProperty.UnsetValue;
-            }
-            return DependencyProperty.UnsetValue;
-        }*/
-
-            /// <summary>
-            /// This event check he has to update the layout color background. It should be disablee if we don't want a background color 
-            /// </summary>
-            /// <param name="sender"></param>
-            /// <param name="e"></param>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AnUserControl_LayoutUpdated(object sender, EventArgs e)
         {
-            if (updateColor)
-            {
-                StartColor();
+              if (updateColor)
+                 {
+                //Detail change Column Cell 
+                changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+                //change all the column with a color
+                changeColorAColumn(brushCur, listOfColumnChangeAllCell);
             }
 
-            updateColor = false;
+                 updateColor = false;
         }
-  
+
         /// <summary>
         /// Change boolean value to update the layout 
         /// </summary>
@@ -474,7 +202,7 @@ namespace WpfControls
             var columnHeader = sender as DataGridColumnHeader;
             if (columnHeader != null)
             {
-                updateColor = true;
+                updateColor = true;               
             }
         }
 
@@ -490,64 +218,67 @@ namespace WpfControls
                 return (DataGridCell)cellContent.Parent;
             return null;
         }
-
-
-        /// <summary>
-        /// Methode to get value of a table in DBF file.
-        /// </summary>
-        /// <returns Return a data table who is used in GetYourDataUbtoDataGrid()></returns>
-        public DataTable GetYourData()
+                
+        //Call addcolumn method when click on button
+        private void addingColumn_Click(object sender, RoutedEventArgs e)
         {
-            DataTable YourResultSet = new DataTable();
-
-            OleDbConnection yourConnectionHandler = new OleDbConnection(
-                @"Provider=VFPOLEDB.1;Data Source=C:\Users\rishe\Desktop\Project Kleijn bBrowser replace\WpfControls\WpfControls");
-
-            // if including the full dbc (database container) reference, just tack that on
-            //      OleDbConnection yourConnectionHandler = new OleDbConnection(
-            //          "Provider=VFPOLEDB.1;Data Source=C:\\SomePath\\NameOfYour.dbc;" );
-
-
-            // Open the connection, and if open successfully, you can try to query it
-            yourConnectionHandler.Open();
-
-            if (yourConnectionHandler.State == ConnectionState.Open)
-            {
-                string mySQL = "select * from imatest";  // dbf table name
-
-                OleDbCommand MyQuery = new OleDbCommand(mySQL, yourConnectionHandler);
-                OleDbDataAdapter DA = new OleDbDataAdapter(MyQuery);
-
-                DA.Fill(YourResultSet);
-
-                yourConnectionHandler.Close();
-            }
-            return YourResultSet;
+            addColumnButtonClick();
         }
+
+        //Call addrow method when click on button
+        private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AddRowWindow arw = new AddRowWindow();
+            arw.ShowDialog();
+            //test
+            //retest
+        }
+
+        ////////////---------------SQL PART------------------///////////////////////////////////
 
         /// <summary>
-        /// Methode to generate a ObservableColletion usable in LoadData
+        ///Loading a datagrid from a database Param :
+        ///(CheckBoxList witch contain the column of checkbox, sqlConnection line to make a connection , sqlQuerry the querry for the sql database)
         /// </summary>
-        /// <returns>Return a Observable Colletion usable in load data</returns>
-        public ObservableCollection<Record> GetYourDataIntoDataGrid()
-        {        
-            DataTable dr = GetYourData();
-            ObservableCollection<Record> DBFRecords = new ObservableCollection<Record>();
-            for(int i = 0; i< dr.Rows.Count; i++) 
+        public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
+        {
+            //connection
+            MySqlConnection conDataBase = new MySqlConnection(sqlConnection);
+            //Sql query to Load
+            MySqlCommand cmdDataBase = new MySqlCommand(sqlQuerry, conDataBase);
+            try
             {
-                Record rc = new Record(); 
-                for (int j = 0; j < dr.Columns.Count; j++) {
-                    DataRow dtr = dr.Rows[i];
-                    var t = dtr[j];
-                    string columnName = dr.Columns[j].ColumnName;
-                    rc.Properties.Add(new Property(columnName, t));                
+                MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
+                //Data table to store the information
+                DataTable dbDataTable = new DataTable();
+                //Fill the inforamation into the datatable
+                sda.Fill(dbDataTable);
+                //Binding the information 
+                for (int index = 0; index < dbDataTable.Columns.Count; index++)
+                {
+                    //Binding information (CheckBox part) 
+                    if (CheckBoxList.Contains(index))
+                    {
+                        var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
+                        Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
+                    }
+                    //Binding information (
+                    else
+                    {
+                        var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
+                        Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
+                    }
+
                 }
-                DBFRecords.Add(rc);
+                //Insert the information into itemsource 
+                Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
             }
-            return DBFRecords;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        //Modify the text of the window which will be open infonction of what element you will add
         public void addColumnButtonClick()
         {
             string header;
@@ -568,67 +299,183 @@ namespace WpfControls
             }
         }
 
-        //Add a column in the actual record and in the datagrid
-        public void addColumn(String columnHeader)
+        public void addColumn(string columnHeader)
         {
-            records = (ObservableCollection<Record>)Ic2DataGrid.ItemsSource;
-
-            int count = 0;
-            foreach (var bonsoir in records)
-            {
-                records[count].Properties.Add(new Property(columnHeader, ""));
-                count++;
-            }
-            int columnNumber = Ic2DataGrid.Columns.Count();
-
-            var binding = new Binding($"Properties[{columnNumber}].Value");
-
+            int index = Ic2DataGrid.Columns.Count;
+            Binding binding = new Binding($"{columnHeader}");
+           
             Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
-
         }
 
-        //Call addcolumn method when click on button
-        private void addingColumn_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// event if someone is in editing mod and he presses enter then ok will make change in DataGrid
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            addColumnButtonClick();
-        }
-
-        //Call addrow method when click on button
-        private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            AddRowWindow arw = new AddRowWindow();
-            int columnsNumber = Ic2DataGrid.Columns.Count();
-            int Xpos = 10;
-            int Ypos = 10;
-            for (int i = 0; i < columnsNumber; i++)
+            updateANewCell = true;
+            StartColor();
+            var cell = Ic2DataGrid.CurrentCell;
+            if (e.Key == Key.Enter)
             {
-                String columnName = Ic2DataGrid.Columns[i].ToString();
-                fillLabel(arw.myAddRowGrid, columnName, i);
+                EditCheck edit = new EditCheck();
+                edit.CheckPopupLabel.Content = "Do you want to update the current cell ?";
+                edit.ShowDialog();
+                if (edit.DialogResult.Value)
+                {
+                    
+                    var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
+                    var columnIndex = cell.Column.DisplayIndex;
+                    writeInTheCell = true;
+                    edit.Close();
+
+                    DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
+                    string dgcs =  dgc.Content.ToString().Substring(33);
+                    
+                    // Make a cell for column could to get a dynamic value
+                    switch (columnIndex)
+                    {
+                        //Replace the value into the content with the column selected.
+                        case 85:
+                            // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
+                            int nResult;
+                            if (int.TryParse(dgcs, out nResult) == false)
+                            {
+                                MessageBox.Show("Not a correct entry !");
+                                Ic2DataGrid.IsReadOnly = true;
+                                break;
+                            }
+                            else
+                            {
+                                //Maybe can be change. We get only the value of the cell with a substring
+//                                recordsOfDataContext.Properties[1].Value = subStringValue;
+
+                                //Call the methode to change color after an update   
+                                changeColor(Ic2DataGrid.CurrentCell, e);
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                    Ic2DataGrid.IsReadOnly = false;
+                    dgc.Content = dgcs;
+                }
+                else
+                {
+                    Ic2DataGrid.CurrentCell = cell;
+                    Ic2DataGrid.IsReadOnly = true;
+                    writeInTheCell = true;
+                    edit.Close();
+                }
             }
-            arw.ShowDialog();
-            if (arw.DialogResult == true)
+            else
             {
-                
+                updateANewCell = true;
             }
         }
 
-        public void fillLabel(Grid grid, String content, int i)
+        private void EnableEdit(DataGridCell dgc, bool isReadOnly )
         {
-            var myDefinition = new ColumnDefinition();
-
-            var myLabel = new Label();
-
-            Grid.SetColumn(myLabel, i);
-
-            myLabel.Margin = new Thickness(5, 10, 5, 25);
-            myLabel.MinWidth = 30;
-            myLabel.Content = content;
-
-            myDefinition.Width = new GridLength(60);
-
-            grid.ColumnDefinitions.Add(myDefinition);
+       
+        }
+        /// <summary>
+        /// This methode will make all the change for every cell you have in the column. It's taking a list as paramater you initialize in the main
+        /// </summary>
+        /// <param name="listOfColumnChangeInteger"></param>
+        private void changeColorColumnCellDetailInteger (List<int> listOfColumnChangeInteger)
+        {
+          foreach(int index in listOfColumnChangeInteger)
+            {
+                for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+                {
+                    //Initialiaze a new brush
+                    Brush color;
+                    // get info of a cell 
+                    DataGridRow r = Ic2DataGrid.GetRow(i);
+                    DataGridCell cell = Ic2DataGrid.GetCell(r, index);
+                    // methode to return a brush value
+                    color = changeColorConditionIntegerWithValue(cell, tempBrush);
+                    cell.Background = color;
+                }
+            }        
+        }
+        /// <summary>
+        /// Change a backgroundcolor with value in code
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private Brush changeColorConditionInteger(DataGridCell cell, Brush tempBrush)
+        {
+          
+            //getting value of the cell
+            string cellContent = cell.ToString();
+            string[] getValue = cellContent.Split(':');
             
-            grid.Children.Add(myLabel);
+            int value = int.Parse(getValue[1]);
+            if (value > 50)
+            {
+                tempBrush = Brushes.Green;
+                
+            }else if (value < 50 )
+            {
+                tempBrush = Brushes.Red;
+            }
+            return tempBrush;
+        }
+        /// <summary>
+        /// Brush b is the current backgroundcolor. Value1 will fix if you want a upper stric value backgroundcolor change and value2 will fix if you want a lower strict value backgroundcolor change. Brush 1 and 2 is the color for the value1 and value2
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="b"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <param name="brushValue1"></param>
+        /// <param name="brusValue2"></param>
+        /// <returns></returns>
+        private Brush changeColorConditionIntegerWithValue(DataGridCell cell, Brush b )
+        {
+            tempBrush = null;
+            //Get the information about the value with a spliter 
+            //The content content the type + value so the spliter keep the value
+            string cellContent = cell.ToString();
+            string[] getValue = cellContent.Split(':');
+
+            //Spliter value are in an tab string so we took the 2 value. The 2 value is = at 1 on a tab 
+            //1 is egal at the value of the cell
+            int value = int.Parse(getValue[1]);
+            if (value > value1)
+            {
+                tempBrush = brushValue1;
+
+            }
+            else if (value < value2)
+            {
+                tempBrush = brushValue2;
+            }
+            return tempBrush;
+        }
+
+        /// <summary>
+        /// This change every background color of a column
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="indexColumn"></param>
+        private void changeColorAColumn(Brush b,List<int> listOfColumnChangeAllCell)
+        {
+            //if you have an integer in the list it will color all the color with the brushCur
+            foreach(int indexColumn in listOfColumnChangeAllCell) { 
+            for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+            {             
+                // get the cell
+                DataGridRow r = Ic2DataGrid.GetRow(i);
+                DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
+                cell.Background = b;
+            }
+            }
         }
     }
+
+    //Next to do make a list with a string contain it will check if we have the contain for a specific name or surname with the column 
 }
