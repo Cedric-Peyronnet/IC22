@@ -62,10 +62,10 @@ namespace DataGridApp
         {
             MyGrid.addColumnButtonClick();
         }
-        /* private void LoadDataFromSQL()
-{
-MyGrid.LoadDataFromSQL();
-}*/
+         private void LoadDataFromSQL()
+        {
+            MyGrid.LoadDataFromSQL();
+        }
 
     }
 }

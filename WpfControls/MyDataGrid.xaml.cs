@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Globalization;
 using System.Data.OleDb;
 using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace WpfControls
 {
@@ -77,7 +78,7 @@ namespace WpfControls
             }            
         }
       
-        /*public void LoadDataFromSQL()
+        public void LoadDataFromSQL()
         {
             string constring = "datasource=localhost;port=3306;username=root;password=root";
             MySqlConnection conDataBase = new MySqlConnection(constring);
@@ -112,9 +113,9 @@ namespace WpfControls
             }
             /*
                 DataSet dbdataset = new DataSet();
-                sda.Fill(dbdataset, "test.iamgod");
+                sda.Fill(dbdataset, "test.iamgod");*/
               
-        }*/
+        }
         // event for the  menu ,currently not working     
         private void MenuItemDeleteRow_Click(object sender, RoutedEventArgs e)
         {
@@ -596,9 +597,38 @@ namespace WpfControls
         private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AddRowWindow arw = new AddRowWindow();
+            int columnsNumber = Ic2DataGrid.Columns.Count();
+            int Xpos = 10;
+            int Ypos = 10;
+            for (int i = 0; i < columnsNumber; i++)
+            {
+                String columnName = Ic2DataGrid.Columns[i].ToString();
+                fillLabel(arw.myAddRowGrid, columnName, i);
+            }
             arw.ShowDialog();
-            //test
-            //retest
+            if (arw.DialogResult == true)
+            {
+                
+            }
+        }
+
+        public void fillLabel(Grid grid, String content, int i)
+        {
+            var myDefinition = new ColumnDefinition();
+
+            var myLabel = new Label();
+
+            Grid.SetColumn(myLabel, i);
+
+            myLabel.Margin = new Thickness(5, 10, 5, 25);
+            myLabel.MinWidth = 30;
+            myLabel.Content = content;
+
+            myDefinition.Width = new GridLength(60);
+
+            grid.ColumnDefinitions.Add(myDefinition);
+            
+            grid.Children.Add(myLabel);
         }
     }
 }
