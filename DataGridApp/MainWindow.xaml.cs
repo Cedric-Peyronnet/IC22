@@ -80,7 +80,7 @@ namespace DataGridApp
         }
         private void loadColor()
         {
-            MyGrid.brushCur = Brushes.Black ;
+            MyGrid.brushCur = Brushes.Yellow ;
             MyGrid.brushValue1 = Brushes.Red ;
             MyGrid.brushValue2 = Brushes.Blue;
             MyGrid.value1 = 25;
@@ -90,7 +90,7 @@ namespace DataGridApp
             //Column 2 will display all the columns with a background color
             MyGrid.listOfColumnChangeAllCell = new List<int> { 1,3 };
 
-            MyGrid.listOfString = new List<string> {"cedric","dick" };
+            MyGrid.listOfString = new List<string> {"cedric","Dick" };
 
             MyGrid.listOfColumnForString = new List<int> { 0 };
 
