@@ -511,7 +511,10 @@ namespace WpfControls
 
         public void changeHeaderWithImage(int indexColumn, System.Drawing.Bitmap image)
         {
-            Ic2DataGrid.Columns[indexColumn].Header = image;
+            DataTemplate dt = new DataTemplate();
+            //  Ic2DataGrid.Columns[indexColumn].HeaderTemplate = image;
+            Ic2DataGrid.Columns[indexColumn].HeaderTemplate = dt;
+           
         }
     }
 }
