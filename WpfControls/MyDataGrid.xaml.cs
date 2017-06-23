@@ -39,6 +39,7 @@ namespace WpfControls
 
 
 
+
         ObservableCollection<Record> records;
 
         public static CultureInfo CurrentCulture { get; set; }
@@ -312,6 +313,7 @@ namespace WpfControls
         /// </summary>
         public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
         {
+            
             //connection
             MySqlConnection conDataBase = new MySqlConnection(sqlConnection);
             //Sql query to Load
@@ -321,6 +323,8 @@ namespace WpfControls
                 MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
                 //Data table to store the information
                 DataTable dbDataTable = new DataTable();
+
+         
                 //Fill the inforamation into the datatable
                 sda.Fill(dbDataTable);
                 //Binding the information 
@@ -338,7 +342,6 @@ namespace WpfControls
                         var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
                         Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
                     }
-
                 }
                 //Insert the information into itemsource 
                 Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
@@ -550,24 +553,32 @@ namespace WpfControls
         {
             b = brushCur;
             //if you have an integer in the list it will color all the color with the brushCur
-            foreach (int indexColumn in listOfColumnChangeAllCell)
+            foreach (int indexColumn in listOfColumnForString)
             {
                 for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
                 {
                     // get the cell
                     DataGridRow r = Ic2DataGrid.GetRow(i);
                     DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
-                    foreach(string currentString in listOfString)
-                    {
-                        cell.Background = b;
-                        break;
-                    }                   
+                    string cellContent = cell.ToString();
+                    //get the value of the string
+                    string[] getValue = cellContent.Split(':');
+                    //loop for the contains of the stringlist
+                    for(int j = 0; j < listOfString.Count; j++)               
+                        if (getValue[1].Contains(listOfString[j]))
+                        {
+                            cell.Background = brushCur;
+                        }                                      
                 }
             }
         }
+
+        public void changeHeaderWithImage(int indexColumn, System.Drawing.Bitmap image)
+        {
+            DataTemplate dt = new DataTemplate();
+            //  Ic2DataGrid.Columns[indexColumn].HeaderTemplate = image;
+            Ic2DataGrid.Columns[indexColumn].HeaderTemplate = dt;
+           
+        }
     }
-
-
-
-    //Next to do make a list with a string contain it will check if we have the contain for a specific name or surname with the column 
 }
