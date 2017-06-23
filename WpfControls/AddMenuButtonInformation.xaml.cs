@@ -20,14 +20,15 @@ namespace WpfControls
     public partial class AddMenuButtonInformation : Window
     {
         //Boolean which says if the addcolumn text zone is already selected
-        public Boolean textZoneSelected = false;
+        public bool textZoneSelected = false;
+        public bool moreThanThatWeHaveToWrite { get; set; }
         public AddMenuButtonInformation()
         {
             InitializeComponent();
         }
         private void Ok_Click(object sender, RoutedEventArgs e)
-        {
-            if(AddColumnTitle.Opacity != 100)
+        {            
+            if (AddColumnTitle.Opacity != 100)
             {
                 AddColumnTitle.Text = "";
             }
@@ -50,6 +51,38 @@ namespace WpfControls
                 AddColumnTitle.Opacity = 100;
                 textZoneSelected = true;
             }            
+        }
+
+        private void AddColumnTitle_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            moreThan15();
+            
+        }
+
+        private void moreThan15()
+        {
+            moreThanThatWeHaveToWrite = false;
+
+            if (AddColumnTitle.Text.Length >= 15)
+            {
+                moreThanThatWeHaveToWrite = true;
+                AddColumnTitle.IsEnabled = false;
+                MessageBoxResult tooLongBox;
+                tooLongBox = MessageBox.Show("This text is too long, please, enter a shorter text", "Too long !", MessageBoxButton.OKCancel);
+                if (tooLongBox == MessageBoxResult.OK)
+                {
+                    string newText = AddColumnTitle.Text;
+                    newText = newText.Substring(0, 14);
+                    AddColumnTitle.Text = newText;
+                    AddColumnTitle.IsEnabled = true;
+                }
+                else if (tooLongBox == MessageBoxResult.Cancel)
+                {
+                    this.Close();
+                }
+
+
+            }
         }
     }
 }

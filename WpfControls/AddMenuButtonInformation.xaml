@@ -12,7 +12,7 @@
                 <ColumnDefinition Width="26*"/>
             </Grid.ColumnDefinitions>
         <Label x:Name="AddTextBoxLabel" Content="Set text :" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="34" Width="129"/>
-        <TextBox x:Name="AddColumnTitle" HorizontalAlignment="Left" Height="23" Margin="144,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175" Text="Enter Text" RenderTransformOrigin="0.492,1.64" Opacity="0.4" GotMouseCapture="AddColumnTitle_GotMouseCapture" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="AddColumnTitle" HorizontalAlignment="Left" Height="23" Margin="144,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175" Text="Enter Text" RenderTransformOrigin="0.492,1.64" Opacity="0.4" GotMouseCapture="AddColumnTitle_GotMouseCapture" Grid.ColumnSpan="2" PreviewKeyDown="AddColumnTitle_PreviewKeyDown"/>
         <Button x:Name="Ok" Content="Ok" HorizontalAlignment="Left" Margin="24,104,0,0" VerticalAlignment="Top" Width="75" Click="Ok_Click" Height="30" Grid.Column="1"/>
         <Button x:Name="Cancel" Content="Cancel" HorizontalAlignment="Left" Margin="144,104,0,0" VerticalAlignment="Top" Width="75" Click="Cancel_Click" Height="30" Grid.ColumnSpan="2"/>
 

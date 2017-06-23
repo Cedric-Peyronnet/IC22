@@ -234,10 +234,74 @@ namespace WpfControls
         //Call addrow method when click on button
         private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
         {
+
+            string longerHeaderName = "";
+
+            for(int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
+            {
+                if(longerHeaderName.Length < Ic2DataGrid.Columns[i].Header.ToString().Length)
+                {
+                    longerHeaderName = Ic2DataGrid.Columns[i].Header.ToString();
+                }
+                
+            }
+
+            int YLabel = 10;
+            int YTextBox = 10;
+            int bottomTextBoxesPosition = 0;
+            
             AddRowWindow arw = new AddRowWindow();
+
+            for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
+            {
+                string headerName = Ic2DataGrid.Columns[i].Header.ToString();
+
+                //Creating labels one by one
+                TextBlock myLabel = new TextBlock();
+                myLabel.Height = 25;
+                myLabel.Width = 120;
+                myLabel.VerticalAlignment = VerticalAlignment.Top;
+                myLabel.Margin = new Thickness(5, YLabel, 350, 0);
+
+                myLabel.Text = headerName + " :";
+
+                //Creating textboxes which start position depends on longer column header title
+                TextBox myTextBox = new TextBox();
+                myTextBox.Height = 20;
+                myTextBox.Width = 150;
+
+                myTextBox.VerticalAlignment = VerticalAlignment.Top;
+                myTextBox.Margin = new Thickness(0, YTextBox, 100, 0);
+                         
+
+                //Add label and textbox
+                arw.myLabelsGrid.Children.Add(myLabel);
+                arw.myLabelsGrid.Children.Add(myTextBox);
+
+                YLabel += 30;
+                YTextBox += 30;
+
+                arw.Height += myTextBox.Height * 1.5;
+            }
+
+            
+
+            //arw.cancelRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
+            //arw.okRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
+
             arw.ShowDialog();
-            //test
-            //retest
+
+            /*if (arw.DialogResult == true)
+            {
+                int textBoxesSize = arw.myTextBoxGrid.Children.Count;
+
+                for(int i = 0; i < textBoxesSize; i++)
+                {
+
+                }
+            }*/
+
+            
         }
 
         ////////////---------------SQL PART------------------///////////////////////////////////
@@ -293,7 +357,7 @@ namespace WpfControls
             add.addOneElementWindow.Title = "Add a column";
             add.AddColumnTitle.Text = "Enter column name";
             add.ShowDialog();
-            if (add.DialogResult == true)
+            if (add.DialogResult == true && !add.moreThanThatWeHaveToWrite)
             {
                 header = add.AddColumnTitle.Text;
                 addColumn(header);
