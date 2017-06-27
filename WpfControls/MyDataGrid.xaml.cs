@@ -9,9 +9,11 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Globalization;
+using System.Configuration;
 using System.Data.OleDb;
 using System.Data;
 using MySql.Data.MySqlClient;
+using System.Collections;
 using System.Data.SqlClient;
 
 namespace WpfControls
@@ -28,20 +30,19 @@ namespace WpfControls
 
         // Everything here have to be initialize in the main
         public Brush tempBrush { get; set; }
-        public Brush brushCur { get; set; }
-        public Brush brushValue1 { get; set; }
-        public Brush brushValue2 { get; set; }
-        public List<int> listOfColumnChangeIntegerAsCellDetail { get; set; }
-        public List<int> listOfColumnChangeAllCell { get; set; }
-        public List<string> listOfString { get; set; }
-        public List<int> listOfColumnForString { get; set; }
-        public int value1 { get; set; }
-        public int value2 { get; set; }
 
+        //Brush and values List storage
+        private static List<int> listValues = new List<int>();
 
+        private static List<Brush> listBrush = new List<Brush>();
 
+        public List<int> listOfColumnChangeIntegerAsCellDetail = new List<int>();
 
-        ObservableCollection<Record> records;
+        public List<int> listOfColumnChangeAllCell = new List<int>();
+
+        private static List<string> listOfString = new List<string>();
+
+        public List<int> listOfColumnForString = new List<int>();
 
         public static CultureInfo CurrentCulture { get; set; }
 
@@ -169,13 +170,13 @@ namespace WpfControls
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
-        {  
+        {
             //Detail change Column Cell 
             changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
             //change all the column with a color
-            changeColorAColumn(brushCur, listOfColumnChangeAllCell);
+            changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
             //change color for a string
-            changeColorAColumnString(brushCur, listOfColumnForString, listOfString);   
+            changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);   
         }
 
        
@@ -192,9 +193,9 @@ namespace WpfControls
                 //Detail change Column Cell 
                 changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
                 //change all the column with a color
-                changeColorAColumn(brushCur, listOfColumnChangeAllCell);
+                changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
                 // change the color for a string
-                changeColorAColumnString(brushCur, listOfColumnForString, listOfString);
+                changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
             }
 
                  updateColor = false;
@@ -511,6 +512,7 @@ namespace WpfControls
         {
           foreach(int index in listOfColumnChangeInteger)
             {
+                
                 for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
                 {
                     //Initialiaze a new brush
@@ -569,14 +571,15 @@ namespace WpfControls
             //Spliter value are in an tab string so we took the 2 value. The 2 value is = at 1 on a tab 
             //1 is egal at the value of the cell
             int value = int.Parse(getValue[1]);
-            if (value > value1)
+
+            if (value > listValues[0])
             {
-                tempBrush = brushValue1;
+                tempBrush = listBrush[1];
 
             }
-            else if (value < value2)
+            else if (value < listValues[1])
             {
-                tempBrush = brushValue2;
+                tempBrush = listBrush[2];
             }
             return tempBrush;
         }
@@ -602,7 +605,7 @@ namespace WpfControls
 
         private void changeColorAColumnString(Brush b, List<int> listOfColumm, List<string> listOfString)
         {
-            b = brushCur;
+            b = listBrush[3];
             //if you have an integer in the list it will color all the color with the brushCur
             foreach (int indexColumn in listOfColumnForString)
             {
@@ -618,18 +621,78 @@ namespace WpfControls
                     for(int j = 0; j < listOfString.Count; j++)               
                         if (getValue[1].Contains(listOfString[j]))
                         {
-                            cell.Background = brushCur;
+                            cell.Background = b;
                         }                                      
                 }
             }
         }
 
-        public void changeHeaderWithImage(int indexColumn, System.Drawing.Bitmap image)
+        public void changeHeaderWithImage(int indexColumn, string test)
         {
-            DataTemplate dt = new DataTemplate();
-            //  Ic2DataGrid.Columns[indexColumn].HeaderTemplate = image;
-            Ic2DataGrid.Columns[indexColumn].HeaderTemplate = dt;
-           
+            
+            Ic2DataGrid.Columns[indexColumn].Header = null;
+            Ic2DataGrid.Columns[indexColumn].HeaderTemplate = FindResource(test) as DataTemplate;
+        }
+
+        public void convertionAppDataInfo()
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+      //      tab = config.AppSettings.Settings.AllKeys.ToArray<config.AppSettings.Settings.AllKeys.ToString()>;
+        
+            foreach (string key in ConfigurationManager.AppSettings)
+            {            
+                if (key.StartsWith("brush"))
+                {
+                    string brush = ConfigurationManager.AppSettings[key];
+                    Brush aBrush ;
+                    SolidColorBrush scb = (SolidColorBrush)new BrushConverter().ConvertFromString(brush);
+                    aBrush = scb;
+                    listBrush.Add(aBrush);
+                }
+                else if (key.StartsWith("valueOfTest"))
+                {
+                    string value = ConfigurationManager.AppSettings[key];
+                    int aValue = int.Parse(value);
+                    listValues.Add(aValue);                   
+                }
+                else if (key.StartsWith("listOfString"))
+                {
+                    string stringToSplit = ConfigurationManager.AppSettings[key];
+                    string[] stringSplited = stringToSplit.Split(',');
+                    foreach (string str in stringSplited)
+                    {
+                        listOfString.Add(str);
+                    }
+                }
+                else if (key.StartsWith("listOfColumnForString"))
+                {
+                    string stringToSplit = ConfigurationManager.AppSettings[key];
+                    string[] stringSplited = stringToSplit.Split(',');
+                    foreach (string str in stringSplited)
+                    {
+                        listOfColumnForString.Add(int.Parse(str));
+                    }
+                }
+                else if (key.StartsWith("listOfColumnChangeAllCell"))
+                {
+                    string stringToSplit = ConfigurationManager.AppSettings[key];
+                    string[] stringSplited = stringToSplit.Split(',');
+                    foreach (string str in stringSplited) ;
+                    foreach (string str in stringSplited)
+                    {
+                        listOfColumnChangeAllCell.Add(int.Parse(str));
+                    }
+                }
+                else if (key.StartsWith("listOfColumnChangeIntegerAsCellDetail"))
+                {
+                    string stringToSplit = ConfigurationManager.AppSettings[key];
+                    string[] stringSplited = stringToSplit.Split(',');       
+                    foreach (string str in stringSplited)
+                    {
+                        listOfColumnChangeIntegerAsCellDetail.Add(int.Parse(str));
+                    }
+                }
+            }
         }
     }
 }

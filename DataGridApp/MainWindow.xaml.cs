@@ -15,12 +15,11 @@ namespace DataGridApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        string sqlConnection = "datasource=192.168.6.196;port=3306;username=cedric;password=root";
-        string sqlQuerry = "select* from sqlbrowsertest.iamgod ";
+        string sqlConnection = "Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1";
+        string sqlQuerry = "select* from html5webnlkleijn.iamgod";
         
         List<int> aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL;
 
-       
         public MainWindow()
         {
             InitializeComponent();
@@ -81,23 +80,9 @@ namespace DataGridApp
         }
         private void loadColor()
         {
-            
-            var bmp = new System.Drawing.Bitmap(Properties.Resources.def);
-            MyGrid.brushCur = System.Windows.Media.Brushes.Yellow ;
-            MyGrid.brushValue1 = System.Windows.Media.Brushes.Red ;
-            MyGrid.brushValue2 = System.Windows.Media.Brushes.Blue;
-            MyGrid.value1 = 25;
-            MyGrid.value2 = 25;
-            // Column 3 will be display cell by cell a background color from previous value 
-            MyGrid.listOfColumnChangeIntegerAsCellDetail = new List<int> {2};
-            //Column 2 will display all the columns with a background color
-            MyGrid.listOfColumnChangeAllCell = new List<int> { 1,3 };
-
-            MyGrid.listOfString = new List<string> {"cedric","Dick" };
-
-            MyGrid.listOfColumnForString = new List<int> { 0 };
-
-            MyGrid.changeHeaderWithImage(2, bmp);
+            MyGrid.convertionAppDataInfo();
+            MyGrid.changeHeaderWithImage(2, "def");
+            MyGrid.changeHeaderWithImage(3, "red");
         }
 
     }
