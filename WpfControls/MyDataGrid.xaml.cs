@@ -278,7 +278,9 @@ namespace WpfControls
                 if(Ic2DataGrid.Columns[i].GetType() == typeof(DataGridCheckBoxColumn))
                 {
                     myCheckBox.Margin = new Thickness(90, YTextBox, 0, 0);
+                    
                     arw.myLabelsGrid.Children.Add(myCheckBox);
+                    arw.my
                     arw.Height += myTextBox.Height * 1.5;
                 }
                 else
