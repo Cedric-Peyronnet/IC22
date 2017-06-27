@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Data.OleDb;
 using System.Data;
 using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 
 namespace WpfControls
 {
@@ -248,61 +249,69 @@ namespace WpfControls
             }
 
             int YLabel = 10;
-            int YTextBox = 10;
-            int bottomTextBoxesPosition = 0;
-            
+            int YTextBox = 10;           
+
             AddRowWindow arw = new AddRowWindow();
 
             for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
                 string headerName = Ic2DataGrid.Columns[i].Header.ToString();
 
-                //Creating labels one by one
                 TextBlock myLabel = new TextBlock();
-                myLabel.Height = 25;
-                myLabel.Width = 120;
-                myLabel.VerticalAlignment = VerticalAlignment.Top;
-                myLabel.Margin = new Thickness(5, YLabel, 350, 0);
+                    myLabel.Height = 25;
+                    myLabel.Width = 120;
+                    myLabel.VerticalAlignment = VerticalAlignment.Top;
+                    myLabel.Margin = new Thickness(5, YLabel, 350, 0);
+                    myLabel.Text = headerName + " :";
 
-                myLabel.Text = headerName + " :";
+                TextBox myTextBox = new TextBox();
+                    myTextBox.Height = 20;
+                    myTextBox.Width = 150;
+                    myTextBox.VerticalAlignment = VerticalAlignment.Top;
+                    myTextBox.Margin = new Thickness(0, YTextBox, 100, 0);
+
+                CheckBox myCheckBox = new CheckBox();
+                    myCheckBox.HorizontalAlignment = HorizontalAlignment.Left;
+                    myCheckBox.VerticalAlignment = VerticalAlignment.Top;
+
+                if(Ic2DataGrid.Columns[i].GetType() == typeof(DataGridCheckBoxColumn))
+                {
+                    myCheckBox.Margin = new Thickness(90, YTextBox, 0, 0);
+                    arw.myLabelsGrid.Children.Add(myCheckBox);
+                    arw.Height += myTextBox.Height * 1.5;
+                }
+                else
+                {
+                    arw.myLabelsGrid.Children.Add(myTextBox);
+
+                    arw.Height += myTextBox.Height * 1.5;
+                }
 
                 //Creating textboxes which start position depends on longer column header title
-                TextBox myTextBox = new TextBox();
-                myTextBox.Height = 20;
-                myTextBox.Width = 150;
 
-                myTextBox.VerticalAlignment = VerticalAlignment.Top;
-                myTextBox.Margin = new Thickness(0, YTextBox, 100, 0);
-                         
 
                 //Add label and textbox
                 arw.myLabelsGrid.Children.Add(myLabel);
-                arw.myLabelsGrid.Children.Add(myTextBox);
+                
 
                 YLabel += 30;
                 YTextBox += 30;
-
-                arw.Height += myTextBox.Height * 1.5;
             }
-
-            
 
             //arw.cancelRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
             //arw.okRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
 
             arw.ShowDialog();
 
-            /*if (arw.DialogResult == true)
+           if (arw.DialogResult == true)
             {
-                int textBoxesSize = arw.myTextBoxGrid.Children.Count;
+                int textBoxesNumber = (arw.myLabelsGrid.Children.Count)/2;
 
-                for(int i = 0; i < textBoxesSize; i++)
+                for(int i = 0; i < textBoxesNumber; i++)
                 {
 
                 }
-            }*/
-
-            
+            }            
         }
 
         ////////////---------------SQL PART------------------///////////////////////////////////
@@ -345,6 +354,7 @@ namespace WpfControls
                 }
                 //Insert the information into itemsource 
                 Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
+                conDataBase.Close();
             }
             catch (Exception ex)
             {
@@ -355,15 +365,18 @@ namespace WpfControls
         public void addColumnButtonClick()
         {
             string header;
+
             AddMenuButtonInformation add = new AddMenuButtonInformation();
+
             add.AddTextBoxLabel.Content = "Enter column name :";
             add.addOneElementWindow.Title = "Add a column";
             add.AddColumnTitle.Text = "Enter column name";
             add.ShowDialog();
+
             if (add.DialogResult == true && !add.moreThanThatWeHaveToWrite)
             {
                 header = add.AddColumnTitle.Text;
-                addColumn(header);
+                addColumn(header, add.columnIsCheckBox);
                 add.Close();
             }
             else
@@ -372,12 +385,50 @@ namespace WpfControls
             }
         }
 
-        public void addColumn(string columnHeader)
+        public void addColumn(string columnHeader, bool isCHeckBox)
         {
             int index = Ic2DataGrid.Columns.Count;
             Binding binding = new Binding($"{columnHeader}");
-           
-            Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
+            if (isCHeckBox)
+            {
+                Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = columnHeader, Binding = binding });
+                MySqlConnection mySqlConnection = new MySqlConnection("datasource=192.168.6.196;port=3306;username=cedric;password=root");
+
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+
+                int result = mySqlCommand.ExecuteNonQuery();
+
+                mySqlCommand.CommandText =
+                "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "BOOLEAN";
+
+                result = mySqlCommand.ExecuteNonQuery();
+            }
+            else
+            {
+                MySqlConnection mySqlConnection = new MySqlConnection("datasource=192.168.6.196; port=3306; username=cedric; password=root");
+                MySqlCommand mySqlCommand = new MySqlCommand();
+                MySqlDataReader reader;
+
+                mySqlCommand.CommandText = "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "VARCHAR(20)";
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
+
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch
+                {
+
+                }
+                
+
+                mySqlConnection.Close();
+
+                Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
+                
+            }
         }
 
         /// <summary>

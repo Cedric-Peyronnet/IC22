@@ -22,6 +22,8 @@ namespace WpfControls
         //Boolean which says if the addcolumn text zone is already selected
         public bool textZoneSelected = false;
         public bool moreThanThatWeHaveToWrite { get; set; }
+
+        public bool columnIsCheckBox = false;
         public AddMenuButtonInformation()
         {
             InitializeComponent();
@@ -82,6 +84,17 @@ namespace WpfControls
                 }
 
 
+            }
+        }
+
+        private void chooseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(myChooseBox.SelectedIndex == 1)
+            {
+                columnIsCheckBox = true;
+            }else
+            {
+                columnIsCheckBox = false;
             }
         }
     }
