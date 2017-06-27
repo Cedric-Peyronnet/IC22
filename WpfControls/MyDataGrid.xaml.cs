@@ -86,7 +86,7 @@ namespace WpfControls
                     }
                 }
             }
-        
+
             Ic2DataGrid.ItemsSource = records;
 
             if (!DeleteAllowed)
@@ -119,49 +119,8 @@ namespace WpfControls
 
         //If someone change the focus of the  currentCell by clicking somewhere else,it will change the readonly on true.
         private void Ic2DataGrid_CurrentCellChanged(object sender, EventArgs e)
-        {
-            Ic2DataGrid.IsReadOnly = false;
-            StartColor();
-            // Ic2DataGrid.IsReadOnly = true;
-        }
-
-        //Prevent from someone click outside from the datagrid
-        /// <summary>
-        /// If someone click outside the cell which he update, that will cancel the readonly he made 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UserControl_MouseClick(object sender, MouseButtonEventArgs e)
-        {
-            Ic2DataGrid.IsReadOnly = false;
-            if (updateANewCell)
-            {
-                Ic2DataGrid.IsReadOnly = true;
-                updateANewCell = false;
-            }
-        }
-
-        // All these methodes/events are for the background color 
-
-        /// <summary>
-        /// change the color when someone update a cell
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void changeColor(object sender, RoutedEventArgs e)
-        {
-            DataGridCellInfo dgci = Ic2DataGrid.CurrentCell;
-            DataGridCell dgc = GetDataGridCell(dgci);
-            ValueToBrushConverter VTC = new ValueToBrushConverter();
-            VTC.Convert(dgc, e.GetType(), Color.FromRgb(0, 0, 0), CurrentCulture);
-        }
-
-        /// <summary>
-        /// Methode to start the update
-        /// </summary>      
-        public void StartColor()
-        {
-            //ColorLoad(Ic2DataGrid);
+        {          
+            Ic2DataGrid.IsReadOnly = true;
         }
 
         /// <summary>
@@ -176,10 +135,10 @@ namespace WpfControls
             //change all the column with a color
             changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
             //change color for a string
-            changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);   
+            changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
         }
 
-       
+
 
         /// <summary>
         /// This event check he has to update the layout color background. It should be disablee if we don't want a background color 
@@ -188,8 +147,8 @@ namespace WpfControls
         /// <param name="e"></param>
         private void AnUserControl_LayoutUpdated(object sender, EventArgs e)
         {
-              if (updateColor)
-                 {
+            if (updateColor)
+            {
                 //Detail change Column Cell 
                 changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
                 //change all the column with a color
@@ -198,7 +157,7 @@ namespace WpfControls
                 changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
             }
 
-                 updateColor = false;
+            updateColor = false;
         }
 
         /// <summary>
@@ -211,7 +170,7 @@ namespace WpfControls
             var columnHeader = sender as DataGridColumnHeader;
             if (columnHeader != null)
             {
-                updateColor = true;               
+                updateColor = true;
             }
         }
 
@@ -227,7 +186,7 @@ namespace WpfControls
                 return (DataGridCell)cellContent.Parent;
             return null;
         }
-                
+
         //Call addcolumn method when click on button
         private void addingColumn_Click(object sender, RoutedEventArgs e)
         {
@@ -240,17 +199,17 @@ namespace WpfControls
 
             string longerHeaderName = "";
 
-            for(int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
+            for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
-                if(longerHeaderName.Length < Ic2DataGrid.Columns[i].Header.ToString().Length)
+                if (longerHeaderName.Length < Ic2DataGrid.Columns[i].Header.ToString().Length)
                 {
                     longerHeaderName = Ic2DataGrid.Columns[i].Header.ToString();
                 }
-                
+
             }
 
             int YLabel = 10;
-            int YTextBox = 10;           
+            int YTextBox = 10;
 
             AddRowWindow arw = new AddRowWindow();
 
@@ -259,28 +218,28 @@ namespace WpfControls
                 string headerName = Ic2DataGrid.Columns[i].Header.ToString();
 
                 TextBlock myLabel = new TextBlock();
-                    myLabel.Height = 25;
-                    myLabel.Width = 120;
-                    myLabel.VerticalAlignment = VerticalAlignment.Top;
-                    myLabel.Margin = new Thickness(5, YLabel, 350, 0);
-                    myLabel.Text = headerName + " :";
+                myLabel.Height = 25;
+                myLabel.Width = 120;
+                myLabel.VerticalAlignment = VerticalAlignment.Top;
+                myLabel.Margin = new Thickness(5, YLabel, 350, 0);
+                myLabel.Text = headerName + " :";
 
                 TextBox myTextBox = new TextBox();
-                    myTextBox.Height = 20;
-                    myTextBox.Width = 150;
-                    myTextBox.VerticalAlignment = VerticalAlignment.Top;
-                    myTextBox.Margin = new Thickness(0, YTextBox, 100, 0);
+                myTextBox.Height = 20;
+                myTextBox.Width = 150;
+                myTextBox.VerticalAlignment = VerticalAlignment.Top;
+                myTextBox.Margin = new Thickness(0, YTextBox, 100, 0);
 
                 CheckBox myCheckBox = new CheckBox();
-                    myCheckBox.HorizontalAlignment = HorizontalAlignment.Left;
-                    myCheckBox.VerticalAlignment = VerticalAlignment.Top;
+                myCheckBox.HorizontalAlignment = HorizontalAlignment.Left;
+                myCheckBox.VerticalAlignment = VerticalAlignment.Top;
 
-                if(Ic2DataGrid.Columns[i].GetType() == typeof(DataGridCheckBoxColumn))
+                if (Ic2DataGrid.Columns[i].GetType() == typeof(DataGridCheckBoxColumn))
                 {
                     myCheckBox.Margin = new Thickness(90, YTextBox, 0, 0);
-                    
+
                     arw.myLabelsGrid.Children.Add(myCheckBox);
-                    arw.my
+
                     arw.Height += myTextBox.Height * 1.5;
                 }
                 else
@@ -295,7 +254,7 @@ namespace WpfControls
 
                 //Add label and textbox
                 arw.myLabelsGrid.Children.Add(myLabel);
-                
+
 
                 YLabel += 30;
                 YTextBox += 30;
@@ -306,15 +265,15 @@ namespace WpfControls
 
             arw.ShowDialog();
 
-           if (arw.DialogResult == true)
+            if (arw.DialogResult == true)
             {
-                int textBoxesNumber = (arw.myLabelsGrid.Children.Count)/2;
+                int textBoxesNumber = (arw.myLabelsGrid.Children.Count) / 2;
 
-                for(int i = 0; i < textBoxesNumber; i++)
+                for (int i = 0; i < textBoxesNumber; i++)
                 {
 
                 }
-            }            
+            }
         }
 
         ////////////---------------SQL PART------------------///////////////////////////////////
@@ -325,7 +284,7 @@ namespace WpfControls
         /// </summary>
         public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
         {
-            
+
             //connection
             MySqlConnection conDataBase = new MySqlConnection(sqlConnection);
             //Sql query to Load
@@ -336,7 +295,7 @@ namespace WpfControls
                 //Data table to store the information
                 DataTable dbDataTable = new DataTable();
 
-         
+
                 //Fill the inforamation into the datatable
                 sda.Fill(dbDataTable);
                 //Binding the information 
@@ -425,13 +384,25 @@ namespace WpfControls
                 {
 
                 }
-                
+
 
                 mySqlConnection.Close();
 
                 Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
-                
+
             }
+        }
+
+        private void Ic2DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (!updateANewCell)
+            {
+                Ic2DataGrid.IsReadOnly = true;
+            }
+            
+           
+            updateANewCell = false;
+
         }
 
         /// <summary>
@@ -442,7 +413,6 @@ namespace WpfControls
         private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             updateANewCell = true;
-            StartColor();
             var cell = Ic2DataGrid.CurrentCell;
             if (e.Key == Key.Enter)
             {
@@ -451,42 +421,35 @@ namespace WpfControls
                 edit.ShowDialog();
                 if (edit.DialogResult.Value)
                 {
-                    
+
                     var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
-                    var columnIndex = cell.Column.DisplayIndex;
+                    int columnIndex = cell.Column.DisplayIndex;
                     writeInTheCell = true;
                     edit.Close();
 
                     DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
-                    string dgcs =  dgc.Content.ToString().Substring(33);
-                    
+                    string dgcs = dgc.Content.ToString().Substring(33);
+
                     // Make a cell for column could to get a dynamic value
-                    switch (columnIndex)
+
+                    if(listOfColumnChangeIntegerAsCellDetail.Contains(columnIndex))
                     {
                         //Replace the value into the content with the column selected.
-                        case 85:
-                            // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
-                            int nResult;
-                            if (int.TryParse(dgcs, out nResult) == false)
-                            {
-                                MessageBox.Show("Not a correct entry !");
-                                Ic2DataGrid.IsReadOnly = true;
-                                break;
-                            }
-                            else
-                            {
-                                //Maybe can be change. We get only the value of the cell with a substring
-//                                recordsOfDataContext.Properties[1].Value = subStringValue;
 
-                                //Call the methode to change color after an update   
-                                changeColor(Ic2DataGrid.CurrentCell, e);
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                    Ic2DataGrid.IsReadOnly = false;
-                    dgc.Content = dgcs;
+                        // Check if the enter is a numeric or not return Message Box if it's nt a numeric value
+                        int nResult;
+                        if (int.TryParse(dgcs, out nResult) == false)
+                        {
+                            MessageBox.Show("Not a correct entry !");
+                            Ic2DataGrid.IsReadOnly = true;
+                           
+                        }else
+                        {
+                            Ic2DataGrid.IsReadOnly = false;
+                            dgc.Content = dgcs;
+                            updateColor = true;
+                        }
+                    }     
                 }
                 else
                 {
@@ -496,16 +459,16 @@ namespace WpfControls
                     edit.Close();
                 }
             }
-            else
-            {
-                updateANewCell = true;
-            }
+          
         }
 
-        private void EnableEdit(DataGridCell dgc, bool isReadOnly )
+        private void EnableEdit(DataGridCell dgc, bool isReadOnly)
         {
-       
+
         }
+
+
+        //Here we have all methode who are used for the backgroundcolor
         /// <summary>
         /// This methode will make all the change for every cell you have in the column. It's taking a list as paramater you initialize in the main
         /// </summary>
@@ -642,11 +605,11 @@ namespace WpfControls
       //      tab = config.AppSettings.Settings.AllKeys.ToArray<config.AppSettings.Settings.AllKeys.ToString()>;
         
             foreach (string key in ConfigurationManager.AppSettings)
-            {            
+            {
                 if (key.StartsWith("brush"))
                 {
                     string brush = ConfigurationManager.AppSettings[key];
-                    Brush aBrush ;
+                    Brush aBrush;
                     SolidColorBrush scb = (SolidColorBrush)new BrushConverter().ConvertFromString(brush);
                     aBrush = scb;
                     listBrush.Add(aBrush);
@@ -655,7 +618,7 @@ namespace WpfControls
                 {
                     string value = ConfigurationManager.AppSettings[key];
                     int aValue = int.Parse(value);
-                    listValues.Add(aValue);                   
+                    listValues.Add(aValue);
                 }
                 else if (key.StartsWith("listOfString"))
                 {
@@ -688,13 +651,15 @@ namespace WpfControls
                 else if (key.StartsWith("listOfColumnChangeIntegerAsCellDetail"))
                 {
                     string stringToSplit = ConfigurationManager.AppSettings[key];
-                    string[] stringSplited = stringToSplit.Split(',');       
+                    string[] stringSplited = stringToSplit.Split(',');
                     foreach (string str in stringSplited)
                     {
                         listOfColumnChangeIntegerAsCellDetail.Add(int.Parse(str));
                     }
+                
                 }
             }
         }
+
     }
 }

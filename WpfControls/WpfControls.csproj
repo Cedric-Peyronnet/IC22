@@ -76,10 +76,10 @@
     <Compile Include="AddRowWindow.xaml.cs">
       <DependentUpon>AddRowWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ChangeBackgroundColor.cs" />
     <Compile Include="EditCheck.xaml.cs">
       <DependentUpon>EditCheck.xaml</DependentUpon>
     </Compile>
-    <Compile Include="enumColor.cs" />
     <Compile Include="HelperClasses.cs" />
     <Compile Include="Menu.xaml.cs">
       <DependentUpon>Menu.xaml</DependentUpon>

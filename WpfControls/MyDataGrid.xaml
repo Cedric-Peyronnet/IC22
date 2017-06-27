@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfControls"    
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" MouseDoubleClick="UserControl_MouseDoubleClick" MouseDown="UserControl_MouseClick" PreviewKeyDown="UserControl_PreviewKeyDown" LayoutUpdated="AnUserControl_LayoutUpdated" >
+             d:DesignHeight="300" d:DesignWidth="300" MouseDoubleClick="UserControl_MouseDoubleClick" PreviewKeyDown="UserControl_PreviewKeyDown" LayoutUpdated="AnUserControl_LayoutUpdated" >
     <UserControl.Resources>
         <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="FontWeight" Value="Bold" />
@@ -27,7 +27,7 @@
     <DataGrid ItemsSource="{Binding Path=Records}" Name="Ic2DataGrid"
         Style="{StaticResource GridStyle}" Margin="0,-4,0,4" 
               CurrentCellChanged="Ic2DataGrid_CurrentCellChanged" 
-              Loaded="Ic2DataGrid_Loaded"  >
+              Loaded="Ic2DataGrid_Loaded" CellEditEnding="Ic2DataGrid_CellEditEnding"  >
         <DataGrid.Resources>
             <Style TargetType="DataGridColumnHeader">
                 <EventSetter Event="Click" Handler="columnHeader_Click" />

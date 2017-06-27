@@ -80,6 +80,7 @@ namespace DataGridApp
         }
         private void loadColor()
         {
+          
             MyGrid.convertionAppDataInfo();
             MyGrid.changeHeaderWithImage(2, "def");
             MyGrid.changeHeaderWithImage(3, "red");
