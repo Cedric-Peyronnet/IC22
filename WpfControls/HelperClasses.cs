@@ -38,7 +38,6 @@ namespace WpfControls
 
         public ObservableCollection<Property> Properties { get; set; } = new ObservableCollection<Property>();
     }
-
  
     /// <summary>
     /// Support for change a color background it could be implement for other things with colors 

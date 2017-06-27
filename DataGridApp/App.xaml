@@ -4,6 +4,39 @@
              xmlns:local="clr-namespace:DataGridApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <DataTemplate x:Key="def">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{TemplateBinding Content}"  />
+                <Image Source="Images/def.bmp"
+               Height="9"
+               Width="9"
+               HorizontalAlignment="Right"
+               Grid.Column="1"
+               />
+            </Grid>
+            
+        </DataTemplate>
+        <DataTemplate x:Key="red">
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{TemplateBinding Content}"  />
+                <Image Source="Images/fdsfsdfsd.bmp"
+               Height="9"
+               Width="9"
+               HorizontalAlignment="Right"
+               Grid.Column="2"
+               />
+                
+            </Grid>
+        </DataTemplate>
+        
     </Application.Resources>
 </Application>
