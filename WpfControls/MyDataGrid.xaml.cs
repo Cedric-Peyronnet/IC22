@@ -598,7 +598,7 @@ namespace WpfControls
                     string[] getValue = cellContent.Split(':');
                     //loop for the contains of the stringlist
                     for(int j = 0; j < listOfString.Count; j++)               
-                        if (getValue.Length > 2)
+                        if (getValue.Length > 1)
                         {
                             if (getValue[1].Contains(listOfString[j]))
                             {
