@@ -176,4 +176,5 @@ namespace WpfControls
             return grid.GetCell(rowContainer, column);
         }
     }
+
 }

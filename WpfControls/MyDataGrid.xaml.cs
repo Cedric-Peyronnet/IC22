@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,11 +9,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Globalization;
 using System.Configuration;
-using System.Data.OleDb;
 using System.Data;
 using MySql.Data.MySqlClient;
-using System.Collections;
-using System.Data.SqlClient;
+using Excel = Microsoft.Office.Interop.Excel;
+using Microsoft.Win32;
+using System.IO;
 
 namespace WpfControls
 {
@@ -49,50 +48,6 @@ namespace WpfControls
         public MyDataGrid()
         {
             InitializeComponent();
-        }
-
-        /// <summary>
-        /// Loading a datagrid from an observable collection
-        /// </summary>
-        /// <param name="records"></param>
-        public void LoadData(ObservableCollection<Record> records)
-        {
-
-            //first extract the columns from the collection and bind them to the grid
-            var columns = records.First().Properties.Select((x, i) => new { Name = x.Name, Index = i }).ToArray();
-            foreach (var column in columns)
-            {
-                var binding = new Binding($"Properties[{column.Index}].Value");
-                Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = column.Name, Binding = binding });
-
-            }
-
-            //second the records themselves
-
-            //Replace the "Text checkBox into a real checkBox" Redefine a binding
-            for (int i = 0; i < records.Count; i++)
-            {
-                for (int j = 0; j < records[i].Properties.Count(); j++)
-                {
-                    if (records[i].Properties[j].Value is CheckBox)
-                    {
-                        string nameOfBox = records[i].Properties[j].Name;
-                        Ic2DataGrid.Columns.RemoveAt(j);
-                        var binding = new Binding($"Properties[{j}].Value");
-                        CheckBox cb = new CheckBox();
-                        cb.Name = nameOfBox;
-                        DataGridCheckBoxColumn dg = new DataGridCheckBoxColumn { Header = cb.Name, Binding = binding };
-                        Ic2DataGrid.Columns.Insert(j, dg);
-                    }
-                }
-            }
-
-            Ic2DataGrid.ItemsSource = records;
-
-            if (!DeleteAllowed)
-            {
-                Delete.Visibility = Visibility.Collapsed;
-            }
         }
 
         // ??
@@ -661,5 +616,89 @@ namespace WpfControls
             }
         }
 
+
+
+        //Microsoft.Office.Interop.Excel reference
+
+        public void toExel()
+        {
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel Documents (*.xls)|*.xls";
+            sfd.FileName = "Inventory_Adjustment_Export.xls";
+            if (sfd.ShowDialog() == true)
+            {
+                // Copy DataGridView results to clipboard
+                copyAlltoClipboard();
+
+                object misValue = System.Reflection.Missing.Value;
+                Excel.Application xlexcel = new Excel.Application();
+
+                xlexcel.DisplayAlerts = false; // Without this you will get two confirm overwrite prompts
+                Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
+                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+
+                // Format column D as text before pasting results, this was required for my data
+                Excel.Range rng = xlWorkSheet.get_Range("D:D").Cells;
+                rng.NumberFormat = "@";
+
+                // Paste clipboard results to worksheet range
+                Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
+                CR.Select();
+
+                xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, false);
+               
+                    // For some reason column A is always blank in the worksheet. ¯\_(ツ)_/¯
+                // Delete blank column A and select cell A1
+                Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
+                delRng.Delete(Type.Missing);
+                xlWorkSheet.get_Range("A1").Select();
+
+                // Save the excel file under the captured location from the SaveFileDialog
+                xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlexcel.DisplayAlerts = true;
+                xlWorkBook.Close(true, misValue, misValue);
+                xlexcel.Quit();
+
+                releaseObject(xlWorkSheet);
+                releaseObject(xlWorkBook);
+                releaseObject(xlexcel);
+
+                // Clear Clipboard and DataGridView selection
+                Clipboard.Clear();
+
+                Ic2DataGrid.UnselectAll();
+
+                // Open the newly saved excel file
+                if (File.Exists(sfd.FileName))
+                    System.Diagnostics.Process.Start(sfd.FileName);
+            }
+        }
+        private void copyAlltoClipboard()
+        {
+           
+            Ic2DataGrid.SelectAll();
+            DataObject dataObj = (DataObject)Clipboard.GetDataObject();
+            if (dataObj != null)
+                Clipboard.SetDataObject(dataObj);
+        }
+
+        private void releaseObject(object obj)
+        {
+            try
+            {
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+                obj = null;
+            }
+            catch (Exception ex)
+            {
+                obj = null;
+                MessageBox.Show("Exception Occurred while releasing object " + ex.ToString());
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
     }
 }

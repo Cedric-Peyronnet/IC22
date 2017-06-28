@@ -8,6 +8,53 @@ namespace WpfControls
 {
     class OldClass
     {
+        /// <summary>
+        /// Loading a datagrid from an observable collection
+        /// </summary>
+        /// <param name="records"></param>
+        public void LoadData(ObservableCollection<Record> records)
+        {
+
+            //first extract the columns from the collection and bind them to the grid
+            var columns = records.First().Properties.Select((x, i) => new { Name = x.Name, Index = i }).ToArray();
+            foreach (var column in columns)
+            {
+                var binding = new Binding($"Properties[{column.Index}].Value");
+                Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = column.Name, Binding = binding });
+
+            }
+
+            //second the records themselves
+
+            //Replace the "Text checkBox into a real checkBox" Redefine a binding
+            for (int i = 0; i < records.Count; i++)
+            {
+                for (int j = 0; j < records[i].Properties.Count(); j++)
+                {
+                    if (records[i].Properties[j].Value is CheckBox)
+                    {
+                        string nameOfBox = records[i].Properties[j].Name;
+                        Ic2DataGrid.Columns.RemoveAt(j);
+                        var binding = new Binding($"Properties[{j}].Value");
+                        CheckBox cb = new CheckBox();
+                        cb.Name = nameOfBox;
+                        DataGridCheckBoxColumn dg = new DataGridCheckBoxColumn { Header = cb.Name, Binding = binding };
+                        Ic2DataGrid.Columns.Insert(j, dg);
+                    }
+                }
+            }
+
+            Ic2DataGrid.ItemsSource = records;
+
+            if (!DeleteAllowed)
+            {
+                Delete.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+
+
         //Modify the text of the window which will be open infonction of what element you will add
         //Add a column in the actual record and in the datagrid
         public void addColumnOld(String columnHeader)
@@ -24,7 +71,7 @@ namespace WpfControls
 
             var binding = new Binding($"Properties[{columnNumber}].Value");
 
-            Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });*/
+            Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
 
         }
 
