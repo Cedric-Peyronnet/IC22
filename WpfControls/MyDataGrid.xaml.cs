@@ -253,7 +253,7 @@ namespace WpfControls
             int YTextBox = 10;           
 
             AddRowWindow arw = new AddRowWindow();
-
+            
             for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
                 string headerName = Ic2DataGrid.Columns[i].Header.ToString();
@@ -390,26 +390,32 @@ namespace WpfControls
         {
             int index = Ic2DataGrid.Columns.Count;
             Binding binding = new Binding($"{columnHeader}");
+            MySqlConnection mySqlConnection = new MySqlConnection("Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1");
+            MySqlCommand mySqlCommand = new MySqlCommand();
+            MySqlDataReader reader;
+
             if (isCHeckBox)
             {
                 Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = columnHeader, Binding = binding });
-                MySqlConnection mySqlConnection = new MySqlConnection("datasource=192.168.6.196;port=3306;username=cedric;password=root");
 
-                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                mySqlCommand.CommandText = "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "BOOLEAN";
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
 
-                int result = mySqlCommand.ExecuteNonQuery();
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch
+                {
 
-                mySqlCommand.CommandText =
-                "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "BOOLEAN";
+                }
 
-                result = mySqlCommand.ExecuteNonQuery();
+                mySqlConnection.Close();
             }
             else
             {
-                MySqlConnection mySqlConnection = new MySqlConnection("datasource=192.168.6.196; port=3306; username=cedric; password=root");
-                MySqlCommand mySqlCommand = new MySqlCommand();
-                MySqlDataReader reader;
-
                 mySqlCommand.CommandText = "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "VARCHAR(20)";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
