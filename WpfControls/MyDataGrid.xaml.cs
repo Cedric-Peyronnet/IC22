@@ -44,6 +44,12 @@ namespace WpfControls
 
         public List<int> listOfColumnForString = new List<int>();
 
+
+        private static List<string> headerList = new List<string>();
+
+        private string sqlQuerry = "select* from html5webnlkleijn.iamgod";
+        private string connection = "Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1";
+
         public MySqlConnection mySqlConnection = new MySqlConnection("Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1");
         public MySqlCommand mySqlCommand = new MySqlCommand();
         public MySqlDataReader reader;
@@ -59,6 +65,8 @@ namespace WpfControls
         //only if you right click on the cells, not ont the headers
         private void MenuItemDeleteColumn_Click(object sender, RoutedEventArgs e)
         {
+            headerList.RemoveAt(Ic2DataGrid.CurrentCell.Column.DisplayIndex);
+
             if (DeleteAllowed)
             {
                 string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
@@ -80,6 +88,7 @@ namespace WpfControls
                 }
 
                 mySqlConnection.Close();
+                
             }
         }
 
@@ -176,17 +185,6 @@ namespace WpfControls
         private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
         {
 
-            string longerHeaderName = "";
-
-            for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
-            {
-                if (longerHeaderName.Length < Ic2DataGrid.Columns[i].Header.ToString().Length)
-                {
-                    longerHeaderName = Ic2DataGrid.Columns[i].Header.ToString();
-                }
-
-            }
-
             int YLabel = 10;
             int YTextBox = 10;
 
@@ -194,7 +192,7 @@ namespace WpfControls
             
             for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
-                string headerName = Ic2DataGrid.Columns[i].Header.ToString();
+                string headerName = headerList[i];
 
                 TextBlock myLabel = new TextBlock();
                 myLabel.Height = 25;
@@ -256,18 +254,14 @@ namespace WpfControls
         }
 
         ////////////---------------SQL PART------------------///////////////////////////////////
-
         /// <summary>
         ///Loading a datagrid from a database Param :
         ///(CheckBoxList witch contain the column of checkbox, sqlConnection line to make a connection , sqlQuerry the querry for the sql database)
         /// </summary>
         public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
         {
-
-            //connection
-            MySqlConnection conDataBase = new MySqlConnection(sqlConnection);
             //Sql query to Load
-            MySqlCommand cmdDataBase = new MySqlCommand(sqlQuerry, conDataBase);
+            MySqlCommand cmdDataBase = new MySqlCommand(sqlQuerry, mySqlConnection);
             try
             {
                 MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
@@ -295,12 +289,14 @@ namespace WpfControls
                 }
                 //Insert the information into itemsource 
                 Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
-                conDataBase.Close();
+                mySqlConnection.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+
+            fillHeaderList(connection);
         }
 
         public void addColumnButtonClick()
@@ -324,6 +320,8 @@ namespace WpfControls
             {
                 add.Close();
             }
+
+            
         }
 
         /// <summary>
@@ -376,8 +374,10 @@ namespace WpfControls
                 mySqlConnection.Close();
 
                 Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
-
             }
+
+            fillHeaderList(connection);
+
         }
 
         private void Ic2DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -391,6 +391,22 @@ namespace WpfControls
             updateANewCell = false;
 
         }
+
+        public void fillHeaderList(string sqlConnection)
+        {
+            //Refer to load data
+            MySqlCommand cmdDataBase = new MySqlCommand(sqlQuerry, mySqlConnection);
+            MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
+            DataTable dbDataTable = new DataTable();
+
+            sda.Fill(dbDataTable);
+            
+            for (int index = 0; index < dbDataTable.Columns.Count; index++)
+            {
+                headerList.Add(dbDataTable.Columns[index].ColumnName);
+            }
+        }
+
 
         /// <summary>
         /// event if someone is in editing mode and presses enter then ok will make change in DataGrid
@@ -417,13 +433,9 @@ namespace WpfControls
                     string dgcs = dgc.Content.ToString().Substring(33);
 
                     string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
-                    DataRowView dataRow = (DataRowView)Ic2DataGrid.SelectedItem;
+                    DataRowView dataRow = (DataRowView)Ic2DataGrid.SelectedItem;                 
 
-                    string firstCellSelected = dataRow.Row.ItemArray[0].ToString();
-                    string secondCellSelected = dataRow.Row.ItemArray[1].ToString();
-                    
-
-                    mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + columnHeader + " = '" + dgcs + "' WHERE " + Ic2DataGrid.Columns[0].Header.ToString() + " = '" + dataRow.Row.ItemArray[0].ToString() + "'";
+                    mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + columnHeader + " = '" + dgcs + "' WHERE " + headerList[0] + " = '" + dataRow.Row.ItemArray[0].ToString() + "'";
                     mySqlCommand.CommandType = CommandType.Text;
                     mySqlCommand.Connection = mySqlConnection;
 
@@ -598,7 +610,7 @@ namespace WpfControls
                     string[] getValue = cellContent.Split(':');
                     //loop for the contains of the stringlist
                     for(int j = 0; j < listOfString.Count; j++)               
-                        if (getValue.Length > 2)
+                        if (getValue.Length > 1)
                         {
                             if (getValue[1].Contains(listOfString[j]))
                             {
