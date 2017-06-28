@@ -12,8 +12,6 @@ using System.Configuration;
 using System.Data;
 using MySql.Data.MySqlClient;
 using Excel = Microsoft.Office.Interop.Excel;
-using Microsoft.Win32;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace WpfControls
@@ -320,8 +318,9 @@ namespace WpfControls
             {
                 add.Close();
             }
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
 
-            
         }
 
         /// <summary>
@@ -432,7 +431,7 @@ namespace WpfControls
                     DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
                     string dgcs = dgc.Content.ToString().Substring(33);
 
-                    string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
+                    string columnHeader = headerList[columnIndex];
                     DataRowView dataRow = (DataRowView)Ic2DataGrid.SelectedItem;                 
 
                     mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + columnHeader + " = '" + dgcs + "' WHERE " + headerList[0] + " = '" + dataRow.Row.ItemArray[0].ToString() + "'";
@@ -482,6 +481,9 @@ namespace WpfControls
                     writeInTheCell = true;
                     edit.Close();
                 }
+            }else
+            {
+         
             }
 
         }
