@@ -44,6 +44,10 @@ namespace WpfControls
 
         public List<int> listOfColumnForString = new List<int>();
 
+        public MySqlConnection mySqlConnection = new MySqlConnection("Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1");
+        public MySqlCommand mySqlCommand = new MySqlCommand();
+        public MySqlDataReader reader;
+
         public static CultureInfo CurrentCulture { get; set; }
 
         public MyDataGrid()
@@ -51,12 +55,31 @@ namespace WpfControls
             InitializeComponent();
         }
 
-        // ??
+        // Method which delete a column in the dataGrid and in the database, but for the moment,
+        //only if you right click on the cells, not ont the headers
         private void MenuItemDeleteColumn_Click(object sender, RoutedEventArgs e)
         {
             if (DeleteAllowed)
             {
+                string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
+                Binding binding = new Binding($"{columnHeader}");
 
+                Ic2DataGrid.Columns.Remove(Ic2DataGrid.CurrentCell.Column);
+                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod DROP COLUMN " + columnHeader;
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
+
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch
+                {
+
+                }
+
+                mySqlConnection.Close();
             }
         }
 
@@ -168,7 +191,7 @@ namespace WpfControls
             int YTextBox = 10;
 
             AddRowWindow arw = new AddRowWindow();
-
+            
             for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
                 string headerName = Ic2DataGrid.Columns[i].Header.ToString();
@@ -303,31 +326,39 @@ namespace WpfControls
             }
         }
 
+        /// <summary>
+        /// Adding column method, which connects to the database and add if the user selecter check box, add a checkboc
+        /// and if the user selected a string, will add a column of strings
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void addColumn(string columnHeader, bool isCHeckBox)
         {
-            int index = Ic2DataGrid.Columns.Count;
             Binding binding = new Binding($"{columnHeader}");
+
             if (isCHeckBox)
             {
                 Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = columnHeader, Binding = binding });
-                MySqlConnection mySqlConnection = new MySqlConnection("datasource=192.168.6.196;port=3306;username=cedric;password=root");
 
-                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + "BOOLEAN";
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
 
-                int result = mySqlCommand.ExecuteNonQuery();
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch
+                {
 
-                mySqlCommand.CommandText =
-                "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "BOOLEAN";
+                }
 
-                result = mySqlCommand.ExecuteNonQuery();
+                mySqlConnection.Close();
             }
             else
             {
-                MySqlConnection mySqlConnection = new MySqlConnection("datasource=192.168.6.196; port=3306; username=cedric; password=root");
-                MySqlCommand mySqlCommand = new MySqlCommand();
-                MySqlDataReader reader;
-
-                mySqlCommand.CommandText = "ALTER TABLE sqlbrowsertest.iamgod ADD " + columnHeader + "VARCHAR(20)";
+                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + "VARCHAR(20)";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
 
@@ -362,7 +393,7 @@ namespace WpfControls
         }
 
         /// <summary>
-        /// event if someone is in editing mod and he presses enter then ok will make change in DataGrid
+        /// event if someone is in editing mode and presses enter then ok will make change in DataGrid
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -377,7 +408,6 @@ namespace WpfControls
                 edit.ShowDialog();
                 if (edit.DialogResult.Value)
                 {
-
                     var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
                     int columnIndex = cell.Column.DisplayIndex;
                     writeInTheCell = true;
@@ -385,6 +415,31 @@ namespace WpfControls
 
                     DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
                     string dgcs = dgc.Content.ToString().Substring(33);
+
+                    string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
+                    DataRowView dataRow = (DataRowView)Ic2DataGrid.SelectedItem;
+
+                    string firstCellSelected = dataRow.Row.ItemArray[0].ToString();
+                    string secondCellSelected = dataRow.Row.ItemArray[1].ToString();
+                    
+
+                    mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + columnHeader + " = '" + dgcs + "' WHERE " + Ic2DataGrid.Columns[0].Header.ToString() + " = '" + dataRow.Row.ItemArray[0].ToString() + "'";
+                    mySqlCommand.CommandType = CommandType.Text;
+                    mySqlCommand.Connection = mySqlConnection;
+
+                    mySqlConnection.Open();
+                    try
+                    {
+                        reader = mySqlCommand.ExecuteReader();
+                    }
+                    catch
+                    {
+
+                    }
+
+                    mySqlConnection.Close();
+
+                    
 
                     // Make a cell for column could to get a dynamic value
 
@@ -542,11 +597,14 @@ namespace WpfControls
                     //get the value of the string
                     string[] getValue = cellContent.Split(':');
                     //loop for the contains of the stringlist
-                    for (int j = 0; j < listOfString.Count; j++)
-                        if (getValue[1].Contains(listOfString[j]))
+                    for(int j = 0; j < listOfString.Count; j++)               
+                        if (getValue.Length > 2)
                         {
-                            cell.Background = b;
-                        }
+                            if (getValue[1].Contains(listOfString[j]))
+                            {
+                                cell.Background = b;
+                            }
+                        }                                      
                 }
             }
         }
