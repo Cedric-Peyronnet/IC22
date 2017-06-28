@@ -14,6 +14,7 @@ using MySql.Data.MySqlClient;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Win32;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace WpfControls
 {
@@ -74,7 +75,7 @@ namespace WpfControls
 
         //If someone change the focus of the  currentCell by clicking somewhere else,it will change the readonly on true.
         private void Ic2DataGrid_CurrentCellChanged(object sender, EventArgs e)
-        {          
+        {
             Ic2DataGrid.IsReadOnly = true;
         }
 
@@ -354,8 +355,8 @@ namespace WpfControls
             {
                 Ic2DataGrid.IsReadOnly = true;
             }
-            
-           
+
+
             updateANewCell = false;
 
         }
@@ -387,7 +388,7 @@ namespace WpfControls
 
                     // Make a cell for column could to get a dynamic value
 
-                    if(listOfColumnChangeIntegerAsCellDetail.Contains(columnIndex))
+                    if (listOfColumnChangeIntegerAsCellDetail.Contains(columnIndex))
                     {
                         //Replace the value into the content with the column selected.
 
@@ -397,14 +398,15 @@ namespace WpfControls
                         {
                             MessageBox.Show("Not a correct entry !");
                             Ic2DataGrid.IsReadOnly = true;
-                           
-                        }else
+
+                        }
+                        else
                         {
                             Ic2DataGrid.IsReadOnly = false;
                             dgc.Content = dgcs;
                             updateColor = true;
                         }
-                    }     
+                    }
                 }
                 else
                 {
@@ -414,7 +416,7 @@ namespace WpfControls
                     edit.Close();
                 }
             }
-          
+
         }
 
         private void EnableEdit(DataGridCell dgc, bool isReadOnly)
@@ -428,11 +430,11 @@ namespace WpfControls
         /// This methode will make all the change for every cell you have in the column. It's taking a list as paramater you initialize in the main
         /// </summary>
         /// <param name="listOfColumnChangeInteger"></param>
-        private void changeColorColumnCellDetailInteger (List<int> listOfColumnChangeInteger)
+        private void changeColorColumnCellDetailInteger(List<int> listOfColumnChangeInteger)
         {
-          foreach(int index in listOfColumnChangeInteger)
+            foreach (int index in listOfColumnChangeInteger)
             {
-                
+
                 for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
                 {
                     //Initialiaze a new brush
@@ -444,7 +446,7 @@ namespace WpfControls
                     color = changeColorConditionIntegerWithValue(cell, tempBrush);
                     cell.Background = color;
                 }
-            }        
+            }
         }
         /// <summary>
         /// Change a backgroundcolor with value in code
@@ -454,17 +456,18 @@ namespace WpfControls
         /// <returns></returns>
         private Brush changeColorConditionInteger(DataGridCell cell, Brush tempBrush)
         {
-          
+
             //getting value of the cell
             string cellContent = cell.ToString();
             string[] getValue = cellContent.Split(':');
-            
+
             int value = int.Parse(getValue[1]);
             if (value > 50)
             {
                 tempBrush = Brushes.Green;
-                
-            }else if (value < 50 )
+
+            }
+            else if (value < 50)
             {
                 tempBrush = Brushes.Red;
             }
@@ -480,7 +483,7 @@ namespace WpfControls
         /// <param name="brushValue1"></param>
         /// <param name="brusValue2"></param>
         /// <returns></returns>
-        private Brush changeColorConditionIntegerWithValue(DataGridCell cell, Brush b )
+        private Brush changeColorConditionIntegerWithValue(DataGridCell cell, Brush b)
         {
             tempBrush = null;
             //Get the information about the value with a spliter 
@@ -509,17 +512,18 @@ namespace WpfControls
         /// </summary>
         /// <param name="b"></param>
         /// <param name="indexColumn"></param>
-        private void changeColorAColumn(Brush b,List<int> listOfColumnChangeAllCell)
+        private void changeColorAColumn(Brush b, List<int> listOfColumnChangeAllCell)
         {
             //if you have an integer in the list it will color all the color with the brushCur
-            foreach(int indexColumn in listOfColumnChangeAllCell) { 
-            for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
-            {             
-                // get the cell
-                DataGridRow r = Ic2DataGrid.GetRow(i);
-                DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
-                cell.Background = b;
-            }
+            foreach (int indexColumn in listOfColumnChangeAllCell)
+            {
+                for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
+                {
+                    // get the cell
+                    DataGridRow r = Ic2DataGrid.GetRow(i);
+                    DataGridCell cell = Ic2DataGrid.GetCell(r, indexColumn);
+                    cell.Background = b;
+                }
             }
         }
 
@@ -538,27 +542,31 @@ namespace WpfControls
                     //get the value of the string
                     string[] getValue = cellContent.Split(':');
                     //loop for the contains of the stringlist
-                    for(int j = 0; j < listOfString.Count; j++)               
+                    for (int j = 0; j < listOfString.Count; j++)
                         if (getValue[1].Contains(listOfString[j]))
                         {
                             cell.Background = b;
-                        }                                      
+                        }
                 }
             }
         }
 
         public void changeHeaderWithImage(int indexColumn, string test)
         {
-            
+
             Ic2DataGrid.Columns[indexColumn].Header = null;
             Ic2DataGrid.Columns[indexColumn].HeaderTemplate = FindResource(test) as DataTemplate;
         }
 
+        //This methode need to be changde everytime you add new values. If values are null you have to write it. Example for brush = transparent
+        /// <summary>
+        /// This methode create all the value data info storage for make the backgroundcolor
+        /// </summary>
         public void convertionAppDataInfo()
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-      //      tab = config.AppSettings.Settings.AllKeys.ToArray<config.AppSettings.Settings.AllKeys.ToString()>;
-        
+            //      tab = config.AppSettings.Settings.AllKeys.ToArray<config.AppSettings.Settings.AllKeys.ToString()>;
+
             foreach (string key in ConfigurationManager.AppSettings)
             {
                 if (key.StartsWith("brush"))
@@ -611,94 +619,63 @@ namespace WpfControls
                     {
                         listOfColumnChangeIntegerAsCellDetail.Add(int.Parse(str));
                     }
-                
+
                 }
             }
         }
 
 
 
-        //Microsoft.Office.Interop.Excel reference
-
+        //Microsoft.Office.Interop.Excel reference link of code : 
+        //https://stackoverflow.com/questions/11167918/how-to-export-from-datatable-to-excel-file-in-wpf-c-sharp
+        /// <summary>
+        /// Create a new xls file 
+        /// </summary>
         public void toExel()
         {
-
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Excel Documents (*.xls)|*.xls";
-            sfd.FileName = "Inventory_Adjustment_Export.xls";
-            if (sfd.ShowDialog() == true)
+            DataTable dt = new DataTable();
+            dt = ((DataView)Ic2DataGrid.ItemsSource).ToTable();
             {
-                // Copy DataGridView results to clipboard
-                copyAlltoClipboard();
 
-                object misValue = System.Reflection.Missing.Value;
-                Excel.Application xlexcel = new Excel.Application();
+                Excel.Application excel = null;
+                Excel.Workbook wb = null;
 
-                xlexcel.DisplayAlerts = false; // Without this you will get two confirm overwrite prompts
-                Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
-                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+                object missing = Type.Missing;
+                Excel.Worksheet ws = null;
+                Excel.Range rng = null;
 
-                // Format column D as text before pasting results, this was required for my data
-                Excel.Range rng = xlWorkSheet.get_Range("D:D").Cells;
-                rng.NumberFormat = "@";
+                try
+                {
+                    excel = new Excel.Application();
+                    wb = excel.Workbooks.Add();
+                    ws = (Excel.Worksheet)wb.ActiveSheet;
 
-                // Paste clipboard results to worksheet range
-                Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
-                CR.Select();
 
-                xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, false);
-               
-                    // For some reason column A is always blank in the worksheet. ¯\_(ツ)_/¯
-                // Delete blank column A and select cell A1
-                Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
-                delRng.Delete(Type.Missing);
-                xlWorkSheet.get_Range("A1").Select();
+                    for (int Idx = 0; Idx < dt.Columns.Count; Idx++)
+                    {
+                        ws.Range["A1"].Offset[0, Idx].Value = dt.Columns[Idx].ColumnName;
+                    }
 
-                // Save the excel file under the captured location from the SaveFileDialog
-                xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
-                xlexcel.DisplayAlerts = true;
-                xlWorkBook.Close(true, misValue, misValue);
-                xlexcel.Quit();
+                    for (int Idx = 0; Idx < dt.Rows.Count; Idx++)
+                    {
+                        ws.Range["A2"].Offset[Idx].Resize[1, dt.Columns.Count].Value =
+                        dt.Rows[Idx].ItemArray;
+                    }
+                   
+                    excel.Visible = true;
+                    wb.Activate();
 
-                releaseObject(xlWorkSheet);
-                releaseObject(xlWorkBook);
-                releaseObject(xlexcel);
-
-                // Clear Clipboard and DataGridView selection
-                Clipboard.Clear();
-
-                Ic2DataGrid.UnselectAll();
-
-                // Open the newly saved excel file
-                if (File.Exists(sfd.FileName))
-                    System.Diagnostics.Process.Start(sfd.FileName);
+                }
+                catch (COMException ex)
+                {
+                    MessageBox.Show("Error accessing Excel: " + ex.ToString());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.ToString());
+                }
             }
-        }
-        private void copyAlltoClipboard()
-        {
-           
-            Ic2DataGrid.SelectAll();
-            DataObject dataObj = (DataObject)Clipboard.GetDataObject();
-            if (dataObj != null)
-                Clipboard.SetDataObject(dataObj);
-        }
 
-        private void releaseObject(object obj)
-        {
-            try
-            {
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
-                obj = null;
-            }
-            catch (Exception ex)
-            {
-                obj = null;
-                MessageBox.Show("Exception Occurred while releasing object " + ex.ToString());
-            }
-            finally
-            {
-                GC.Collect();
-            }
         }
     }
 }
