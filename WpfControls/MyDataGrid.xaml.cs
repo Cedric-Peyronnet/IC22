@@ -72,11 +72,13 @@ namespace WpfControls
                 string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
                 Binding binding = new Binding($"{columnHeader}");
 
+                //Create the sql query which will be executed
                 Ic2DataGrid.Columns.Remove(Ic2DataGrid.CurrentCell.Column);
                 mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod DROP COLUMN " + columnHeader;
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
 
+                //Open the connection to the sql database and execute the query previously written
                 mySqlConnection.Open();
                 try
                 {
@@ -87,13 +89,14 @@ namespace WpfControls
 
                 }
 
+                //Close the connection
                 mySqlConnection.Close();
                 
             }
         }
 
+            ///Events on edition
 
-        // events for editing
         /// <summary>
         /// if double click into a cell go on edit mode
         /// </summary>
@@ -111,8 +114,11 @@ namespace WpfControls
             Ic2DataGrid.IsReadOnly = true;
         }
 
+            ///End of events on edition    
+
         /// <summary>
-        /// This event start after the main and do everything what we need after.
+        /// This event does everything the program needs to work after the creation of the database and the datagrid
+        /// For example, the coloration of the cells
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -120,8 +126,10 @@ namespace WpfControls
         {
             //Detail change Column Cell 
             changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+
             //change all the column with a color
             changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
+
             //change color for a string
             changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
         }
@@ -129,7 +137,8 @@ namespace WpfControls
 
 
         /// <summary>
-        /// This event check he has to update the layout color background. It should be disablee if we don't want a background color 
+        /// This event checks if he has to update the layout color background. 
+        /// If you don't want any background color, disable it.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -144,7 +153,6 @@ namespace WpfControls
                 // change the color for a string
                 changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
             }
-
             updateColor = false;
         }
 
@@ -175,25 +183,29 @@ namespace WpfControls
             return null;
         }
 
-        //Call addcolumn method when click on button
+        //Call addcolumn method when click on ok Button of the addcolumn window
         private void addingColumn_Click(object sender, RoutedEventArgs e)
         {
             addColumnButtonClick();
         }
 
-        //Call addrow method when click on button
+        //Open a window to enter every information on a row
         private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
         {
-
+            //Create integers to allow the modification of the position
+            //Better to do YLabel += 10; than 150 lines more and write every time a different position
             int YLabel = 10;
             int YTextBox = 10;
 
+            //Create a new window of row creation
             AddRowWindow arw = new AddRowWindow();
             
             for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
+                //Get the name of the column to add
                 string headerName = headerList[i];
 
+                //Create and place a label which contains the header name of one column
                 TextBlock myLabel = new TextBlock();
                 myLabel.Height = 25;
                 myLabel.Width = 120;
@@ -201,16 +213,19 @@ namespace WpfControls
                 myLabel.Margin = new Thickness(5, YLabel, 350, 0);
                 myLabel.Text = headerName + " :";
 
+                //Create and place a text box which will contain what the user will write in
                 TextBox myTextBox = new TextBox();
                 myTextBox.Height = 20;
                 myTextBox.Width = 150;
                 myTextBox.VerticalAlignment = VerticalAlignment.Top;
                 myTextBox.Margin = new Thickness(0, YTextBox, 100, 0);
 
+                //Create a checkbox which can be used if the user wanted a check box column
                 CheckBox myCheckBox = new CheckBox();
                 myCheckBox.HorizontalAlignment = HorizontalAlignment.Left;
                 myCheckBox.VerticalAlignment = VerticalAlignment.Top;
 
+                //Place the elements, or check box, or label, or textbox and change the position every loop
                 if (Ic2DataGrid.Columns[i].GetType() == typeof(DataGridCheckBoxColumn))
                 {
                     myCheckBox.Margin = new Thickness(90, YTextBox, 0, 0);
@@ -226,13 +241,10 @@ namespace WpfControls
                     arw.Height += myTextBox.Height * 1.5;
                 }
 
-                //Creating textboxes which start position depends on longer column header title
-
-
                 //Add label and textbox
                 arw.myLabelsGrid.Children.Add(myLabel);
 
-
+                //Add the position which will change for the next loop
                 YLabel += 30;
                 YTextBox += 30;
             }
@@ -240,8 +252,10 @@ namespace WpfControls
             //arw.cancelRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
             //arw.okRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
 
+            //Open the window with every labels, check boxes and text boxes
             arw.ShowDialog();
 
+            //If the user clicks on OK, get the content of every textboxes and check boxes
             if (arw.DialogResult == true)
             {
                 int textBoxesNumber = (arw.myLabelsGrid.Children.Count) / 2;
@@ -253,25 +267,28 @@ namespace WpfControls
             }
         }
 
-        ////////////---------------SQL PART------------------///////////////////////////////////
         /// <summary>
         ///Loading a datagrid from a database Param :
-        ///(CheckBoxList witch contain the column of checkbox, sqlConnection line to make a connection , sqlQuerry the querry for the sql database)
+        ///(CheckBoxList, which contains the checkboxes columns, 
+        ///sqlConnection which is the line to make the connection to the database, 
+        ///sqlQuerry, which is the query that you want to send to the database)
         /// </summary>
         public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
         {
-            //Sql query to Load
+            //Create the database command with the query previously entered
+            //And with the connection already written
             MySqlCommand cmdDataBase = new MySqlCommand(sqlQuerry, mySqlConnection);
             try
             {
                 MySqlDataAdapter sda = new MySqlDataAdapter(cmdDataBase);
-                //Data table to store the information
-                DataTable dbDataTable = new DataTable();
 
+                //Data table to store the informations
+                DataTable dbDataTable = new DataTable();
 
                 //Fill the inforamation into the datatable
                 sda.Fill(dbDataTable);
-                //Binding the information 
+
+                //Binding all the information s
                 for (int index = 0; index < dbDataTable.Columns.Count; index++)
                 {
                     //Binding information (CheckBox part) 
@@ -280,36 +297,43 @@ namespace WpfControls
                         var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
                         Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
                     }
-                    //Binding information (
+
+                    //Binding information (datagrid column part)
                     else
                     {
                         var binding = new Binding($"{dbDataTable.Columns[index].ToString()}");
                         Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = dbDataTable.Columns[index].ColumnName, Binding = binding });
                     }
                 }
+
                 //Insert the information into itemsource 
                 Ic2DataGrid.ItemsSource = dbDataTable.DefaultView;
                 mySqlConnection.Close();
             }
             catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            {MessageBox.Show(ex.Message);}
 
+            //Refill the header list to be sure that every column names are in this lsit
             fillHeaderList(connection);
         }
 
+        //Open a window with a label, a text box and allow the user to choose
+        //to create a string column or a check box column
         public void addColumnButtonClick()
         {
             string header;
 
             AddMenuButtonInformation add = new AddMenuButtonInformation();
 
+            //Create the window dynamicly
             add.AddTextBoxLabel.Content = "Enter column name :";
             add.addOneElementWindow.Title = "Add a column";
             add.AddColumnTitle.Text = "Enter column name";
             add.ShowDialog();
 
+            //If the user clicks on "ok", and the name of the column isn't too long,
+            //Create this column
+            //Else, close the window.
             if (add.DialogResult == true && !add.moreThanThatWeHaveToWrite)
             {
                 header = add.AddColumnTitle.Text;
@@ -325,7 +349,8 @@ namespace WpfControls
         }
 
         /// <summary>
-        /// Adding column method, which connects to the database and add if the user selecter check box, add a checkboc
+        /// Adding column method, which connects to the database,
+        /// add if the user selected check box, add a checkbox
         /// and if the user selected a string, will add a column of strings
         /// </summary>
         /// <param name="sender"></param>
@@ -334,10 +359,13 @@ namespace WpfControls
         {
             Binding binding = new Binding($"{columnHeader}");
 
+            //Test if it's a check box column or a string column
             if (isCHeckBox)
             {
+                //Add in the grid a check box column
                 Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = columnHeader, Binding = binding });
 
+                //Add in the database a column and her type is boolean
                 mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + "BOOLEAN";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
@@ -347,15 +375,12 @@ namespace WpfControls
                 {
                     reader = mySqlCommand.ExecuteReader();
                 }
-                catch
-                {
-
-                }
-
+                catch{}
                 mySqlConnection.Close();
             }
             else
             {
+                //Add in the database a column and her type is varchar of 20 chars
                 mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + "VARCHAR(20)";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
@@ -365,33 +390,30 @@ namespace WpfControls
                 {
                     reader = mySqlCommand.ExecuteReader();
                 }
-                catch
-                {
-
-                }
-
+                catch{}
 
                 mySqlConnection.Close();
 
+                //Add to the grid a new text column
                 Ic2DataGrid.Columns.Add(new DataGridTextColumn { Header = columnHeader, Binding = binding });
             }
 
+            //Add to the header list the new column created
             fillHeaderList(connection);
 
         }
 
+        //Confirm if you stopped the edition mode or not
         private void Ic2DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (!updateANewCell)
             {
                 Ic2DataGrid.IsReadOnly = true;
             }
-
-
             updateANewCell = false;
-
         }
 
+        //Fill the header list which contains every columns names of the database
         public void fillHeaderList(string sqlConnection)
         {
             //Refer to load data
@@ -401,6 +423,7 @@ namespace WpfControls
 
             sda.Fill(dbDataTable);
             
+            //For every columns the database has, fill her name in a list
             for (int index = 0; index < dbDataTable.Columns.Count; index++)
             {
                 headerList.Add(dbDataTable.Columns[index].ColumnName);
@@ -409,7 +432,7 @@ namespace WpfControls
 
 
         /// <summary>
-        /// event if someone is in editing mode and presses enter then ok will make change in DataGrid
+        /// Event if someone is in editing mode and presses enter then ok will make change in DataGrid
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -417,11 +440,14 @@ namespace WpfControls
         {
             updateANewCell = true;
             var cell = Ic2DataGrid.CurrentCell;
+
             if (e.Key == Key.Enter)
             {
                 EditCheck edit = new EditCheck();
                 edit.CheckPopupLabel.Content = "Do you want to update the current cell ?";
                 edit.ShowDialog();
+
+                //Tests if the user press "Enter"
                 if (edit.DialogResult.Value)
                 {
                     var selectedRow = moduleHelper.GetSelectedRow(Ic2DataGrid);
@@ -432,29 +458,26 @@ namespace WpfControls
                     DataGridCell dgc = Ic2DataGrid.GetCell(selectedRow, columnIndex);
                     string dgcs = dgc.Content.ToString().Substring(33);
 
-                    string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
+                    //Create a string which contains the actual name of the column that you are editing
+                    string columnHeader = headerList[columnIndex];
                     DataRowView dataRow = (DataRowView)Ic2DataGrid.SelectedItem;                 
-
+                    
+                    //Creates the SQL Query
                     mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + columnHeader + " = '" + dgcs + "' WHERE " + headerList[0] + " = '" + dataRow.Row.ItemArray[0].ToString() + "'";
                     mySqlCommand.CommandType = CommandType.Text;
                     mySqlCommand.Connection = mySqlConnection;
 
+                    //Open the connection to sql database and execure the query previously written
                     mySqlConnection.Open();
                     try
                     {
                         reader = mySqlCommand.ExecuteReader();
                     }
-                    catch
-                    {
+                    catch{}
 
-                    }
-
-                    mySqlConnection.Close();
-
-                    
+                    mySqlConnection.Close();                
 
                     // Make a cell for column could to get a dynamic value
-
                     if (listOfColumnChangeIntegerAsCellDetail.Contains(columnIndex))
                     {
                         //Replace the value into the content with the column selected.
@@ -494,7 +517,8 @@ namespace WpfControls
 
         //Here we have all methode who are used for the backgroundcolor
         /// <summary>
-        /// This methode will make all the change for every cell you have in the column. It's taking a list as paramater you initialize in the main
+        /// This methode will make all the change for every cell you have in the column.
+        /// It's taking a list as paramater you initialize in the main
         /// </summary>
         /// <param name="listOfColumnChangeInteger"></param>
         private void changeColorColumnCellDetailInteger(List<int> listOfColumnChangeInteger)
