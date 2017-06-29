@@ -24,7 +24,7 @@ namespace WpfControls
         public bool updateANewCell { get; set; }
         public bool writeInTheCell { get; set; }
         public bool DeleteAllowed { get; set; }
-
+        public bool headerClicked { get; set; }
         // Everything here have to be initialize in the main
         public Brush tempBrush { get; set; }
 
@@ -37,10 +37,13 @@ namespace WpfControls
         private string sqlQuerry = "select* from html5webnlkleijn.iamgod";
         private string connection = "Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1";
 
+        public int index;
+        public DataGridCellInfo cellToEdit;
         public MySqlConnection mySqlConnection = new MySqlConnection("Server=84.246.4.143;port=9131;database=html5webnlkleijn;username=html5webnlkltest;password=testtest1");
         public MySqlCommand mySqlCommand = new MySqlCommand();
         public MySqlDataReader reader;
-
+        private string typeOfColumn;
+        public static CultureInfo CurrentCulture { get; set; }
 
         public MyDataGrid()
         {
@@ -51,6 +54,7 @@ namespace WpfControls
         //only if you right click on the cells, not ont the headers
         private void MenuItemDeleteColumn_Click(object sender, RoutedEventArgs e)
         {
+            //Works only if you left click before on a cell
             headerList.RemoveAt(Ic2DataGrid.CurrentCell.Column.DisplayIndex);
 
             if (DeleteAllowed)
@@ -90,8 +94,22 @@ namespace WpfControls
         /// <param name="e"></param>
         public void UserControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            //Make update available 
-            Ic2DataGrid.IsReadOnly = false;
+            if (headerClicked)
+            {
+
+            }else
+            {
+                //Make update available 
+                Ic2DataGrid.IsReadOnly = false;
+
+                //Get the type of the cell
+                typeOfColumn = Ic2DataGrid.CurrentCell.Column.GetType().ToString();
+            }
+
+            cellToEdit = Ic2DataGrid.CurrentCell;
+            myDataRow = (DataRowView)Ic2DataGrid.SelectedItem;
+            index = Ic2DataGrid.CurrentCell.Column.DisplayIndex;
+
         }
 
         //If someone change the focus of the  currentCell by clicking somewhere else,it will change the readonly on true.
@@ -101,6 +119,81 @@ namespace WpfControls
         }
 
         ///End of events on edition    
+
+        /// <summary>
+        /// This event does everything the program needs to work after the creation of the database and the datagrid
+        /// For example, the coloration of the cells
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            //Detail change Column Cell 
+            changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+
+            //change all the column with a color
+            changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
+
+            //change color for a string
+            changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
+
+            
+        }
+
+
+
+        /// <summary>
+        /// This event checks if he has to update the layout color background. 
+        /// If you don't want any background color, disable it.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AnUserControl_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (updateColor)
+            {
+                //Detail change Column Cell 
+                changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
+                //change all the column with a color
+                changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
+                // change the color for a string
+                changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
+            }
+            updateColor = false;
+
+            
+        }
+
+        /// <summary>
+        /// Change boolean value to update the layout 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>  
+        private void columnHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var columnHeader = sender as DataGridColumnHeader;
+            if (columnHeader != null)
+            {
+                updateColor = true;
+            }
+
+            headerClicked = true;
+
+            setDBBooleanValue();
+        }
+
+        /// <summary>
+        /// Convert DataGridCellInfo into DataGridCell
+        /// </summary>
+        /// <param name="cellInfo"></param>
+        /// <returns></returns>      
+        public DataGridCell GetDataGridCell(DataGridCellInfo cellInfo)
+        {
+            var cellContent = cellInfo.Column.GetCellContent(cellInfo.Item);
+            if (cellContent != null)
+                return (DataGridCell)cellContent.Parent;
+            return null;
+        }
 
         //Call addcolumn method when click on ok Button of the addcolumn window
         private void addingColumn_Click(object sender, RoutedEventArgs e)
@@ -289,7 +382,7 @@ namespace WpfControls
                 Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = columnHeader, Binding = binding });
 
                 //Add in the database a column and her type is boolean
-                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + "BOOLEAN";
+                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + " BOOLEAN";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
 
@@ -300,6 +393,20 @@ namespace WpfControls
                 }
                 catch{}
                 mySqlConnection.Close();
+
+
+                mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + columnHeader + " = '0'";
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
+
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch { }
+                mySqlConnection.Close();
+
             }
             else
             {
@@ -323,7 +430,6 @@ namespace WpfControls
 
             //Add to the header list the new column created
             fillHeaderList(connection);
-
         }
 
         //Confirm if you stopped the edition mode or not
@@ -333,7 +439,7 @@ namespace WpfControls
             {
                 Ic2DataGrid.IsReadOnly = true;
             }
-            updateANewCell = false;
+            updateANewCell = true;
         }
 
         //Fill the header list which contains every columns names of the database
@@ -431,15 +537,49 @@ namespace WpfControls
             {
          
             }
-
         }
 
-        private void EnableEdit(DataGridCell dgc, bool isReadOnly)
+        public void setDBBooleanValue()
         {
+            
+            if (typeOfColumn == typeof(DataGridCheckBoxColumn).ToString())
+            {
+                //MessageBox.Show("chackbox");
+                string b = myDataRow.Row.ItemArray[index].ToString();
 
+                if (b == "True")
+                {
+                    mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + cellToEdit.Column.Header.ToString() + " = '1' WHERE " + headerList[0] + " = '" + myDataRow.Row.ItemArray[0].ToString() + "'";
+                    mySqlCommand.CommandType = CommandType.Text;
+                    mySqlCommand.Connection = mySqlConnection;
+
+                    mySqlConnection.Open();
+                    try
+                    {
+                        reader = mySqlCommand.ExecuteReader();
+                    }
+                    catch { }
+                    mySqlConnection.Close();
+                }
+                else if (b.Contains("False"))
+                {
+
+                   mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + cellToEdit.Column.Header.ToString() + " = '0' WHERE " + headerList[0] + " = '" + myDataRow.Row.ItemArray[0].ToString() + "'";
+                    mySqlCommand.CommandType = CommandType.Text;
+                    mySqlCommand.Connection = mySqlConnection;
+
+                    mySqlConnection.Open();
+                    try
+                    {
+                        reader = mySqlCommand.ExecuteReader();
+                    }
+                    catch { }
+                    mySqlConnection.Close();
+                }
+            }
         }
-
-
+        
+        
         //Here we have all methode who are used for the backgroundcolor
 
         /// <summary>
@@ -609,6 +749,11 @@ namespace WpfControls
                 }
             }
 
+        }
+
+        private void userMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            headerClicked = false;
         }
     }
 }

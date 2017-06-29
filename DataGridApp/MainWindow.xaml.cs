@@ -35,7 +35,7 @@ namespace DataGridApp
         }
         private void LoadDataFromSQL()
         {
-            aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> { 3 };
+            aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL = new List<int> {3, 5 };
        //     aListIsRead = new List<int> { 2 };
             MyGrid.LoadDataFromSQL(aListWhitchContainTheColumnCheckBoxWithTrueOrFalseSQL, sqlConnection,sqlQuerry);            
         }
