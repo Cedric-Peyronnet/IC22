@@ -65,7 +65,7 @@ namespace WpfControls
         {
             moreThanThatWeHaveToWrite = false;
             
-            if (AddColumnTitle.Text.Length >= 15)
+            if (AddColumnTitle.Text.Length >= 14)
             {
                 moreThanThatWeHaveToWrite = true;
                 AddColumnTitle.IsEnabled = false;
@@ -74,7 +74,7 @@ namespace WpfControls
                 if (tooLongBox == MessageBoxResult.OK)
                 {
                     string newText = AddColumnTitle.Text;
-                    newText = newText.Substring(0, 14);
+                    newText = newText.Substring(0, 13);
                     AddColumnTitle.Text = newText;
                     AddColumnTitle.IsEnabled = true;
                     moreThanThatWeHaveToWrite = false;
