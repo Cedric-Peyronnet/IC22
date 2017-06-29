@@ -77,6 +77,8 @@ namespace DataGridApp
             MyGrid.changeColorAColumn(fill.ds.listOfBrusheData[0][0], fill.ds.listOfColumnIndexer[2]);
 
             MyGrid.changeColorColumnCellDetailInteger(fill.ds.listOfColumnIndexer[3], 25, 25, fill.ds.listOfBrusheData[0][2], fill.ds.listOfBrusheData[0][1]);
+
+            MyGrid.setDBBooleanValue();
         }
     }
 }
