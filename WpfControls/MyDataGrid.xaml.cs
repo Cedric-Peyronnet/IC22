@@ -21,7 +21,6 @@ namespace WpfControls
     /// </summary>
     public partial class MyDataGrid : UserControl
     {
-        public bool updateColor { get; set; }
         public bool updateANewCell { get; set; }
         public bool writeInTheCell { get; set; }
         public bool DeleteAllowed { get; set; }
@@ -30,19 +29,9 @@ namespace WpfControls
         public Brush tempBrush { get; set; }
 
         //Brush and values List storage
-        private static List<int> listValues = new List<int>();
-
-        private static List<Brush> listBrush = new List<Brush>();
 
         public List<int> listOfColumnChangeIntegerAsCellDetail = new List<int>();
-
-        public List<int> listOfColumnChangeAllCell = new List<int>();
-
-        private static List<string> listOfString = new List<string>();
-
-        public List<int> listOfColumnForString = new List<int>();
-
-
+        
         private static List<string> headerList = new List<string>();
 
         private string sqlQuerry = "select* from html5webnlkleijn.iamgod";
@@ -52,7 +41,6 @@ namespace WpfControls
         public MySqlCommand mySqlCommand = new MySqlCommand();
         public MySqlDataReader reader;
 
-        public static CultureInfo CurrentCulture { get; set; }
 
         public MyDataGrid()
         {
@@ -112,74 +100,7 @@ namespace WpfControls
             Ic2DataGrid.IsReadOnly = true;
         }
 
-            ///End of events on edition    
-
-        /// <summary>
-        /// This event does everything the program needs to work after the creation of the database and the datagrid
-        /// For example, the coloration of the cells
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Ic2DataGrid_Loaded(object sender, RoutedEventArgs e)
-        {
-            //Detail change Column Cell 
-            changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
-
-            //change all the column with a color
-            changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
-
-            //change color for a string
-            changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
-        }
-
-
-
-        /// <summary>
-        /// This event checks if he has to update the layout color background. 
-        /// If you don't want any background color, disable it.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AnUserControl_LayoutUpdated(object sender, EventArgs e)
-        {
-            if (updateColor)
-            {
-                //Detail change Column Cell 
-                changeColorColumnCellDetailInteger(listOfColumnChangeIntegerAsCellDetail);
-                //change all the column with a color
-                changeColorAColumn(listBrush[0], listOfColumnChangeAllCell);
-                // change the color for a string
-                changeColorAColumnString(listBrush[3], listOfColumnForString, listOfString);
-            }
-            updateColor = false;
-        }
-
-        /// <summary>
-        /// Change boolean value to update the layout 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>  
-        private void columnHeader_Click(object sender, RoutedEventArgs e)
-        {
-            var columnHeader = sender as DataGridColumnHeader;
-            if (columnHeader != null)
-            {
-                updateColor = true;
-            }
-        }
-
-        /// <summary>
-        /// Convert DataGridCellInfo into DataGridCell
-        /// </summary>
-        /// <param name="cellInfo"></param>
-        /// <returns></returns>      
-        public DataGridCell GetDataGridCell(DataGridCellInfo cellInfo)
-        {
-            var cellContent = cellInfo.Column.GetCellContent(cellInfo.Item);
-            if (cellContent != null)
-                return (DataGridCell)cellContent.Parent;
-            return null;
-        }
+        ///End of events on edition    
 
         //Call addcolumn method when click on ok Button of the addcolumn window
         private void addingColumn_Click(object sender, RoutedEventArgs e)
@@ -271,6 +192,9 @@ namespace WpfControls
         ///sqlConnection which is the line to make the connection to the database, 
         ///sqlQuerry, which is the query that you want to send to the database)
         /// </summary>
+        /// <param name="CheckBoxList"></param>
+        /// <param name="sqlConnection"></param>
+        /// <param name="sqlQuerry"></param>
         public void LoadDataFromSQL(List<int> CheckBoxList, string sqlConnection, string sqlQuerry)
         {
             //Create the database command with the query previously entered
@@ -493,13 +417,12 @@ namespace WpfControls
                         {
                             Ic2DataGrid.IsReadOnly = false;
                             dgc.Content = dgcs;
-                            updateColor = true;
                         }
                     }
                 }
                 else
                 {
-                    Ic2DataGrid.CurrentCell = cell;
+                    // If dialogue result = false
                     Ic2DataGrid.IsReadOnly = true;
                     writeInTheCell = true;
                     edit.Close();
@@ -518,54 +441,30 @@ namespace WpfControls
 
 
         //Here we have all methode who are used for the backgroundcolor
+
         /// <summary>
         /// This methode will make all the change for every cell you have in the column.
         /// It's taking a list as paramater you initialize in the main
         /// </summary>
         /// <param name="listOfColumnChangeInteger"></param>
-        private void changeColorColumnCellDetailInteger(List<int> listOfColumnChangeInteger)
+        public void changeColorColumnCellDetailInteger(List<int> listOfColumnChangeInteger, int value1, int value2, Brush brushValue1, Brush brushValue2)
         {
             foreach (int index in listOfColumnChangeInteger)
             {
 
                 for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
                 {
-                    //Initialiaze a new brush
-                    Brush color;
                     // get info of a cell 
                     DataGridRow r = Ic2DataGrid.GetRow(i);
                     DataGridCell cell = Ic2DataGrid.GetCell(r, index);
                     // methode to return a brush value
-                    color = changeColorConditionIntegerWithValue(cell, tempBrush);
+                    Brush color = changeColorConditionIntegerWithValue(cell, value1, value2,brushValue1, brushValue2);
                     cell.Background = color;
+                    listOfColumnChangeIntegerAsCellDetail.Add(index);
                 }
             }
         }
-        /// <summary>
-        /// Change a backgroundcolor with value in code
-        /// </summary>
-        /// <param name="cell"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        private Brush changeColorConditionInteger(DataGridCell cell, Brush tempBrush)
-        {
-
-            //getting value of the cell
-            string cellContent = cell.ToString();
-            string[] getValue = cellContent.Split(':');
-
-            int value = int.Parse(getValue[1]);
-            if (value > 50)
-            {
-                tempBrush = Brushes.Green;
-
-            }
-            else if (value < 50)
-            {
-                tempBrush = Brushes.Red;
-            }
-            return tempBrush;
-        }
+      
         /// <summary>
         /// Brush b is the current backgroundcolor. Value1 will fix if you want a upper stric value backgroundcolor change and value2 will fix if you want a lower strict value backgroundcolor change. Brush 1 and 2 is the color for the value1 and value2
         /// </summary>
@@ -576,7 +475,8 @@ namespace WpfControls
         /// <param name="brushValue1"></param>
         /// <param name="brusValue2"></param>
         /// <returns></returns>
-        private Brush changeColorConditionIntegerWithValue(DataGridCell cell, Brush b)
+
+        private Brush changeColorConditionIntegerWithValue(DataGridCell cell, int value1, int value2, Brush brushValue1, Brush brushValue2)
         {
             tempBrush = null;
             //Get the information about the value with a spliter 
@@ -588,14 +488,14 @@ namespace WpfControls
             //1 is egal at the value of the cell
             int value = int.Parse(getValue[1]);
 
-            if (value > listValues[0])
+            if (value > value1)
             {
-                tempBrush = listBrush[1];
+                tempBrush = brushValue1;
 
             }
-            else if (value < listValues[1])
+            else if (value < value2)
             {
-                tempBrush = listBrush[2];
+                tempBrush = brushValue2;
             }
             return tempBrush;
         }
@@ -605,7 +505,7 @@ namespace WpfControls
         /// </summary>
         /// <param name="b"></param>
         /// <param name="indexColumn"></param>
-        private void changeColorAColumn(Brush b, List<int> listOfColumnChangeAllCell)
+        public void changeColorAColumn(Brush b, List<int> listOfColumnChangeAllCell)
         {
             //if you have an integer in the list it will color all the color with the brushCur
             foreach (int indexColumn in listOfColumnChangeAllCell)
@@ -619,12 +519,12 @@ namespace WpfControls
                 }
             }
         }
-
-        private void changeColorAColumnString(Brush b, List<int> listOfColumm, List<string> listOfString)
+     
+        public void changeColorAColumnString(Brush b, List<int> listOfColumm, List<string> listOfString)
         {
-            b = listBrush[3];
+         
             //if you have an integer in the list it will color all the color with the brushCur
-            foreach (int indexColumn in listOfColumnForString)
+            foreach (int indexColumn in listOfColumm)
             {
                 for (int i = 0; i < Ic2DataGrid.Items.Count; i++)
                 {
@@ -646,81 +546,18 @@ namespace WpfControls
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Change the header text by a name 
+        /// </summary>
+        /// <param name="indexColumn"></param>
+        /// <param name="test"></param>
         public void changeHeaderWithImage(int indexColumn, string test)
         {
 
             Ic2DataGrid.Columns[indexColumn].Header = null;
             Ic2DataGrid.Columns[indexColumn].HeaderTemplate = FindResource(test) as DataTemplate;
         }
-
-        //This methode need to be changde everytime you add new values. If values are null you have to write it. Example for brush = transparent
-        /// <summary>
-        /// This methode create all the value data info storage for make the backgroundcolor
-        /// </summary>
-        public void convertionAppDataInfo()
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            //      tab = config.AppSettings.Settings.AllKeys.ToArray<config.AppSettings.Settings.AllKeys.ToString()>;
-
-            foreach (string key in ConfigurationManager.AppSettings)
-            {
-                if (key.StartsWith("brush"))
-                {
-                    string brush = ConfigurationManager.AppSettings[key];
-                    Brush aBrush;
-                    SolidColorBrush scb = (SolidColorBrush)new BrushConverter().ConvertFromString(brush);
-                    aBrush = scb;
-                    listBrush.Add(aBrush);
-                }
-                else if (key.StartsWith("valueOfTest"))
-                {
-                    string value = ConfigurationManager.AppSettings[key];
-                    int aValue = int.Parse(value);
-                    listValues.Add(aValue);
-                }
-                else if (key.StartsWith("listOfString"))
-                {
-                    string stringToSplit = ConfigurationManager.AppSettings[key];
-                    string[] stringSplited = stringToSplit.Split(',');
-                    foreach (string str in stringSplited)
-                    {
-                        listOfString.Add(str);
-                    }
-                }
-                else if (key.StartsWith("listOfColumnForString"))
-                {
-                    string stringToSplit = ConfigurationManager.AppSettings[key];
-                    string[] stringSplited = stringToSplit.Split(',');
-                    foreach (string str in stringSplited)
-                    {
-                        listOfColumnForString.Add(int.Parse(str));
-                    }
-                }
-                else if (key.StartsWith("listOfColumnChangeAllCell"))
-                {
-                    string stringToSplit = ConfigurationManager.AppSettings[key];
-                    string[] stringSplited = stringToSplit.Split(',');
-                    foreach (string str in stringSplited) ;
-                    foreach (string str in stringSplited)
-                    {
-                        listOfColumnChangeAllCell.Add(int.Parse(str));
-                    }
-                }
-                else if (key.StartsWith("listOfColumnChangeIntegerAsCellDetail"))
-                {
-                    string stringToSplit = ConfigurationManager.AppSettings[key];
-                    string[] stringSplited = stringToSplit.Split(',');
-                    foreach (string str in stringSplited)
-                    {
-                        listOfColumnChangeIntegerAsCellDetail.Add(int.Parse(str));
-                    }
-
-                }
-            }
-        }
-
-
 
         //Microsoft.Office.Interop.Excel reference link of code : 
         //https://stackoverflow.com/questions/11167918/how-to-export-from-datatable-to-excel-file-in-wpf-c-sharp

@@ -83,7 +83,7 @@
     <Compile Include="AddRowWindow.xaml.cs">
       <DependentUpon>AddRowWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ChangeBackgroundColor.cs" />
+    <Compile Include="DataStoring.cs" />
     <Compile Include="EditCheck.xaml.cs">
       <DependentUpon>EditCheck.xaml</DependentUpon>
     </Compile>
