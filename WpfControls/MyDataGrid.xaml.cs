@@ -276,7 +276,7 @@ namespace WpfControls
             //If the user clicks on "ok", and the name of the column isn't too long,
             //Create this column
             //Else, close the window.
-            if (add.DialogResult == true && !add.moreThanThatWeHaveToWrite)
+            if (add.DialogResult == true && add.moreThanThatWeHaveToWrite == false)
             {
                 header = add.AddColumnTitle.Text;
                 addColumn(header, add.columnIsCheckBox);

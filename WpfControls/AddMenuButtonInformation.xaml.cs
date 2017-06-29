@@ -77,13 +77,12 @@ namespace WpfControls
                     newText = newText.Substring(0, 14);
                     AddColumnTitle.Text = newText;
                     AddColumnTitle.IsEnabled = true;
+                    moreThanThatWeHaveToWrite = false;
                 }
-                else if (tooLongBox == MessageBoxResult.Cancel)
+                else
                 {
                     this.Close();
                 }
-
-
             }
         }
 
@@ -92,7 +91,8 @@ namespace WpfControls
             if(myChooseBox.SelectedIndex == 1)
             {
                 columnIsCheckBox = true;
-            }else
+            }
+            else if(myChooseBox.SelectedIndex == 0)
             {
                 columnIsCheckBox = false;
             }
