@@ -342,7 +342,7 @@ namespace WpfControls
             else
             {
                 //Add in the database a column and her type is varchar of 20 chars
-                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + "VARCHAR(20)";
+                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + " VARCHAR(20)";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
 

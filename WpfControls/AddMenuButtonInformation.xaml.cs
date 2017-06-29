@@ -64,7 +64,7 @@ namespace WpfControls
         private void moreThan15()
         {
             moreThanThatWeHaveToWrite = false;
-
+            
             if (AddColumnTitle.Text.Length >= 15)
             {
                 moreThanThatWeHaveToWrite = true;
