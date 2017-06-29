@@ -12,8 +12,6 @@ using System.Configuration;
 using System.Data;
 using MySql.Data.MySqlClient;
 using Excel = Microsoft.Office.Interop.Excel;
-using Microsoft.Win32;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace WpfControls
@@ -369,7 +367,10 @@ namespace WpfControls
             else
             {
                 add.Close();
-            }            
+            }
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
+
         }
 
         /// <summary>
@@ -542,6 +543,9 @@ namespace WpfControls
                     writeInTheCell = true;
                     edit.Close();
                 }
+            }else
+            {
+         
             }
         }
 
