@@ -43,7 +43,7 @@
                 <MenuItem Header="Edit" Name="Edit"></MenuItem>
                 <MenuItem Header="Delete" Name="Delete">
                     <MenuItem Header="Delete Column" Click="MenuItemDeleteColumn_Click" Name="Column"/>
-                    <MenuItem Header="Delete Row" Click="MenuItemDeleteColumn_Click" Name="Row"/>
+                    <MenuItem Header="Delete Row" Click="MenuItemDeleteRow_Click" Name="Row"/>
                 </MenuItem>
 
             </ContextMenu>

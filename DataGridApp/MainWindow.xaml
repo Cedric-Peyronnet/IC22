@@ -6,12 +6,12 @@
         xmlns:local="clr-namespace:DataGridApp"
         xmlns:WpfControls="clr-namespace:WpfControls;assembly=WpfControls" x:Class="DataGridApp.MainWindow"
         mc:Ignorable="d"
-        Title="Kleijn transport" Height="350" Width="682.843" MinWidth="680" MinHeight="400">
-    <Grid Loaded="Grid_Loaded" LayoutUpdated="Grid_LayoutUpdated">
-        <WpfControls:MyDataGrid Height="190" Margin="10,100,10,10" Width="639" Name="MyGrid" Padding="0" UseLayoutRounding="False" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-      
-        <Button x:Name="addColumnButton" Content="Add Column" HorizontalAlignment="Left" Margin="500,34,0,0" VerticalAlignment="Top" Width="75" Click="addColumnButton_Click"/>
-        <Button x:Name="saveExel" Content="Save To Excel" HorizontalAlignment="Left" Margin="137,54,0,0" VerticalAlignment="Top" Width="75" Click="saveExel_Click"/>
+        Title="Kleijn transport" Height="350" Width="604.843" MinWidth="700" MinHeight="400">
+    <Grid Loaded="Grid_Loaded" LayoutUpdated="Grid_LayoutUpdated" Margin="0,0,2,0">
+        <WpfControls:MyDataGrid Margin="10,120,10,10" Name="MyGrid" Padding="0" UseLayoutRounding="False"/>
+
+        <Button x:Name="addColumnButton" Content="Add Column" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="76" Click="addColumnButton_Click"/>
+        <Button x:Name="saveExel" Content="Save To Excel" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="saveExel_Click"/>
     </Grid>
-    
+
 </Window>

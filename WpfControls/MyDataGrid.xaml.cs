@@ -52,13 +52,49 @@ namespace WpfControls
             InitializeComponent();
         }
 
-        // Method which delete a column in the dataGrid and in the database, but for the moment,
-        //only if you right click on the cells, not ont the headers
+        /// <summary>
+        /// Method which delete the row that the user has selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItemDeleteRow_Click(object sender, RoutedEventArgs e)
+        {
+            if(MessageBox.Show("Are you sure you want to delete this line ?", "Delete Line", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                //Ic2DataGrid.Items.Remove(Ic2DataGrid.Items.CurrentItem);
+                DataRowView myDataRow = (DataRowView)Ic2DataGrid.SelectedItem;
+
+                //Create the sql query which will be executed
+                mySqlCommand.CommandText = "DELETE FROM html5webnlkleijn.iamgod WHERE " + headerList[0] + " = '" + myDataRow.Row.ItemArray[0].ToString() + "'";
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
+
+                //Open the connection to the sql database and execute the query previously written
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch
+                {}
+
+                //Close the connection
+                mySqlConnection.Close();
+            }
+        }
+
+        /// <summary>
+        /// Method which delete a column in the dataGrid and in the database, but for the moment,
+        ///only if you right click on the cells, not ont the headers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MenuItemDeleteColumn_Click(object sender, RoutedEventArgs e)
         {
             //Works only if you left click before on a cell
             headerList.RemoveAt(Ic2DataGrid.CurrentCell.Column.DisplayIndex);
 
+            //Works only if delete is allowed
             if (DeleteAllowed)
             {
                 string columnHeader = Ic2DataGrid.CurrentCell.Column.Header.ToString();
@@ -108,27 +144,40 @@ namespace WpfControls
                 typeOfColumn = Ic2DataGrid.CurrentCell.Column.GetType().ToString();
             }
 
+            //Get all the informations about the datagrid to allow other methods to use them
             cellToEdit = Ic2DataGrid.CurrentCell;
             myDataRow = (DataRowView)Ic2DataGrid.SelectedItem;
             index = Ic2DataGrid.CurrentCell.Column.DisplayIndex;
 
         }
 
-        //If someone change the focus of the  currentCell by clicking somewhere else,it will change the readonly on true.
+        /// <summary>
+        /// If someone change the focus of the currentCell by clicking somewhere else,it will change the readonly on true.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Ic2DataGrid_CurrentCellChanged(object sender, EventArgs e)
         {
             Ic2DataGrid.IsReadOnly = true;
         }
 
-        ///End of events on edition    
-        
-        //Call addcolumn method when click on ok Button of the addcolumn window
+        //End of events on edition    
+
+        /// <summary>
+        /// Call addcolumn method when click on ok Button of the addcolumn window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void addingColumn_Click(object sender, RoutedEventArgs e)
         {
             addColumnButtonClick();
         }
 
-        //Open a window to enter every information on a row
+        /// <summary>
+        /// Open a window to enter every information on a row
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void addRowMenuItem_Click(object sender, RoutedEventArgs e)
         {
             //Create integers to allow the modification of the position
@@ -138,7 +187,7 @@ namespace WpfControls
 
             //Create a new window of row creation
             AddRowWindow arw = new AddRowWindow();
-            
+
             for (int i = 0; i < Ic2DataGrid.Columns.Count(); i++)
             {
                 //Get the name of the column to add
@@ -164,6 +213,9 @@ namespace WpfControls
                 myCheckBox.HorizontalAlignment = HorizontalAlignment.Left;
                 myCheckBox.VerticalAlignment = VerticalAlignment.Top;
 
+                //Add textblock
+                arw.myLabelsGrid.Children.Add(myLabel);
+
                 //Place the elements, or check box, or label, or textbox and change the position every loop
                 if (Ic2DataGrid.Columns[i].GetType() == typeof(DataGridCheckBoxColumn))
                 {
@@ -180,26 +232,60 @@ namespace WpfControls
                     arw.Height += myTextBox.Height * 1.5;
                 }
 
-                //Add label and textbox
-                arw.myLabelsGrid.Children.Add(myLabel);
+
 
                 //Add the position which will change for the next loop
                 YLabel += 30;
                 YTextBox += 30;
             }
 
-            //arw.cancelRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
-            //arw.okRowAddButton.VerticalAlignment = VerticalAlignment.Bottom;
-
             //Open the window with every labels, check boxes and text boxes
             arw.ShowDialog();
 
-            //If the user clicks on OK, get the content of every textboxes and check boxes
+            List<string> valuesAddLine = new List<string>();
+
             if (arw.DialogResult == true)
             {
-                int textBoxesNumber = (arw.myLabelsGrid.Children.Count) / 2;
+                //Fill the string list with all the values the user added
+                for (int i = 1; i < arw.myLabelsGrid.Children.Count; i += 2)
+                {
+                    var test = arw.myLabelsGrid.Children[i];
+                    if(test.GetType() == typeof(CheckBox))
+                    {
+                        string checkBoxIsChecked = test.ToString().Substring(56);
+                        valuesAddLine.Add(checkBoxIsChecked);
+                    }
+                    else
+                    {
+                        string textBoxContener = test.ToString().Substring(33);
+                        valuesAddLine.Add(textBoxContener);
+                    }
+                }
 
-                for (int i = 0; i < textBoxesNumber; i++)
+                string myNewLineSql = "'";
+                for(int i = 0; i < valuesAddLine.Count; i++)
+                {
+                    if(i == valuesAddLine.Count - 1)
+                    {
+                        myNewLineSql = myNewLineSql + valuesAddLine[i] + "'";
+                    }else
+                    {
+                        myNewLineSql = myNewLineSql + valuesAddLine[i] + "', '";
+                    }     
+                }
+
+                Ic2DataGrid.Columns.Remove(Ic2DataGrid.CurrentCell.Column);
+                mySqlCommand.CommandText = "INSERT INTO html5webnlkleijn.iamgod VALUES (" + myNewLineSql + " )";
+                mySqlCommand.CommandType = CommandType.Text;
+                mySqlCommand.Connection = mySqlConnection;
+
+                //Open the connection to the sql database and execute the query previously written
+                mySqlConnection.Open();
+                try
+                {
+                    reader = mySqlCommand.ExecuteReader();
+                }
+                catch
                 {
 
                 }
@@ -470,14 +556,18 @@ namespace WpfControls
             }
         }
 
+
+        /// <summary>
+        /// Method which send to the database the value of the check box that you edited
+        /// </summary>
         public void setDBBooleanValue()
         {
-            
             if (typeOfColumn == typeof(DataGridCheckBoxColumn).ToString())
             {
-                //MessageBox.Show("chackbox");
                 string b = myDataRow.Row.ItemArray[index].ToString();
 
+                //Test if the value of the check box is "checked" or not
+                //And send a query to the database.
                 if (b == "True")
                 {
                     mySqlCommand.CommandText = "UPDATE html5webnlkleijn.iamgod SET " + cellToEdit.Column.Header.ToString() + " = '1' WHERE " + headerList[0] + " = '" + myDataRow.Row.ItemArray[0].ToString() + "'";
@@ -555,18 +645,26 @@ namespace WpfControls
             string cellContent = cell.ToString();
             string[] getValue = cellContent.Split(':');
 
-            //Spliter value are in an tab string so we took the 2 value. The 2 value is = at 1 on a tab 
-            //1 is egal at the value of the cell
-            int value = int.Parse(getValue[1]);
-
-            if (value > value1)
+            //Spliter values are in a tab of strings, so we took the 2nd value. The 2nd value is equals at 1 on a tab .
+            //1 is equal to the value of the cell
+            try
             {
-                tempBrush = brushValue1;
+                int value = int.Parse(getValue[1]);
 
+                if (value > value1)
+                {
+                    tempBrush = brushValue1;
+
+                }
+                else if (value < value2)
+                {
+                    tempBrush = brushValue2;
+                }
+                
             }
-            else if (value < value2)
+            catch
             {
-                tempBrush = brushValue2;
+
             }
             return tempBrush;
         }
