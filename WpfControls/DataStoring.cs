@@ -20,6 +20,7 @@ namespace WpfControls
 
         public List<List<int>> listOfValueForTestBackGroundColor = new List<List<int>>();
 
+        public string tableNameSQL { get; set; }
     }
 
 

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DataGridApp"
         xmlns:WpfControls="clr-namespace:WpfControls;assembly=WpfControls" x:Class="DataGridApp.MainWindow"
         mc:Ignorable="d"
-        Title="Kleijn transport" Height="350" Width="604.843" MinWidth="700" MinHeight="400">
+        Title="Kleijn transport" Height="350" Width="604.843" MinWidth="700" MinHeight="400" WindowStartupLocation="CenterScreen">
     <Grid Loaded="Grid_Loaded" LayoutUpdated="Grid_LayoutUpdated" Margin="0,0,2,0">
         <WpfControls:MyDataGrid Margin="10,120,10,10" Name="MyGrid" Padding="0" UseLayoutRounding="False"/>
 

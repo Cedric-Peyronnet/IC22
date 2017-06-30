@@ -30,8 +30,7 @@ namespace DataGridApp
         }
         private void addColumnButton_Click(object sender, RoutedEventArgs e)
         {
-            MyGrid.addColumnButtonClick();
-
+            MyGrid.addColumnButtonClick(fill.ds.tableNameSQL);
         }
         private void LoadDataFromSQL()
         {

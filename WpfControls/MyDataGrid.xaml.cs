@@ -65,7 +65,7 @@ namespace WpfControls
                 DataRowView myDataRow = (DataRowView)Ic2DataGrid.SelectedItem;
 
                 //Create the sql query which will be executed
-                mySqlCommand.CommandText = "DELETE FROM html5webnlkleijn.iamgod WHERE " + headerList[0] + " = '" + myDataRow.Row.ItemArray[0].ToString() + "'";
+                mySqlCommand.CommandText = "DELETE FROM html5webnlkleijn.iamgod WHERE" + headerList[0] + " = '" + myDataRow.Row.ItemArray[0].ToString() + "'";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
 
@@ -168,9 +168,9 @@ namespace WpfControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void addingColumn_Click(object sender, RoutedEventArgs e)
+        private void addingColumn_Click(string tableName)
         {
-            addColumnButtonClick();
+            addColumnButtonClick(tableName);
         }
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace WpfControls
 
         //Open a window with a label, a text box and allow the user to choose
         //to create a string column or a check box column
-        public void addColumnButtonClick()
+        public void addColumnButtonClick(string tableName)
         {
             string header;
 
@@ -365,7 +365,7 @@ namespace WpfControls
             if (add.DialogResult == true && add.moreThanThatWeHaveToWrite == false)
             {
                 header = add.AddColumnTitle.Text;
-                addColumn(header, add.columnIsCheckBox);
+                addColumn(header, add.columnIsCheckBox, tableName);
                 add.Close();
             }
             else
@@ -388,7 +388,7 @@ namespace WpfControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void addColumn(string columnHeader, bool isCHeckBox)
+        public void addColumn(string columnHeader, bool isCHeckBox, string tableName)
         {
             Binding binding = new Binding($"{columnHeader}");
 
@@ -399,7 +399,7 @@ namespace WpfControls
                 Ic2DataGrid.Columns.Add(new DataGridCheckBoxColumn { Header = columnHeader, Binding = binding });
 
                 //Add in the database a column and her type is boolean
-                mySqlCommand.CommandText = "ALTER TABLE html5webnlkleijn.iamgod ADD " + columnHeader + " BOOLEAN";
+                mySqlCommand.CommandText = "ALTER TABLE " + tableName + " ADD " + columnHeader + " BOOLEAN";
                 mySqlCommand.CommandType = CommandType.Text;
                 mySqlCommand.Connection = mySqlConnection;
 

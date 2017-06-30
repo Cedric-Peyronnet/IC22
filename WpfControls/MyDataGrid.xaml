@@ -31,13 +31,11 @@
               MouseDoubleClick="UserControl_MouseDoubleClick" 
               MouseDown="userMouseDown"
               BorderThickness="5">
-     
 
-          
         <DataGrid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Add" Name="Add">
-                    <MenuItem Header="Add Column" Click="addingColumn_Click" Name="addingColumn"/>
+                    
                     <MenuItem Header="Add Row" Click="addRowMenuItem_Click" Name="addingRow"/>
                 </MenuItem>
                 <MenuItem Header="Edit" Name="Edit"></MenuItem>
@@ -48,5 +46,6 @@
 
             </ContextMenu>
         </DataGrid.ContextMenu>
+        
     </DataGrid>
 </UserControl>

@@ -32,6 +32,8 @@ namespace DataGridApp {
 
                 ///list... [3][x]
                 ds.listOfColumnIndexer.Add(new List<int> { 2 });
+
+                ds.tableNameSQL = "html5webnlkleijn.iamgod";
             }
         }
     }
